@@ -1,13 +1,23 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:provider/provider.dart';
 import 'package:ecosynapse/main.dart';
+import 'package:ecosynapse/core/state/auth_state.dart';
 
 void main() {
-  testWidgets('EcoSynapse smoke test', (WidgetTester tester) async {
+  testWidgets('Splash screen smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [ChangeNotifierProvider(create: (_) => AuthState())],
+        child: const EcoSynapseApp(),
+      ),
+    );
 
-    // Verify that our title and subtitle are present.
-    expect(find.text('EcoSynapse'), findsAtLeastNWidgets(1));
-    expect(find.text('Smart Waste. Smarter Communities.'), findsOneWidget);
+    // Verify that EcoSynapse text is shown
+    expect(find.text('EcoSynapse'), findsOneWidget);
+
+    // Fast-forward the splash timer
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpAndSettle();
   });
 }
