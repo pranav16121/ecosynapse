@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/dimens.dart';
 import '../../../core/state/auth_state.dart';
 import '../../../core/state/resident_state.dart';
+import '../../../core/state/navigation_state.dart';
 import '../../../core/mock/mock_data.dart';
 import '../../../core/widgets/eco_card.dart';
 import '../../../core/widgets/eco_button.dart';
@@ -71,10 +72,7 @@ class HomeScreen extends StatelessWidget {
               onPressed: () => context.push('/notifications'),
             ),
             const SizedBox(width: EcoSpacing.s),
-            const CircleAvatar(
-              radius: 20,
-              child: Icon(Icons.person),
-            ),
+            const CircleAvatar(radius: 20, child: Icon(Icons.person)),
           ],
         ),
       ),
@@ -103,9 +101,7 @@ class HomeScreen extends StatelessWidget {
                       children: [
                         Text(
                           '${state.ecoScore}',
-                          style: Theme.of(context)
-                              .textTheme
-                              .displayMedium
+                          style: Theme.of(context).textTheme.displayMedium
                               ?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: Theme.of(context).colorScheme.primary,
@@ -202,7 +198,7 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildEcoPointsCard(BuildContext context, ResidentState state) {
     return EcoCard(
-      onTap: () {}, // Navigate to rewards
+      onTap: () => context.read<NavigationState>().setResidentIndex(2),
       child: Wrap(
         spacing: EcoSpacing.m,
         runSpacing: EcoSpacing.m,
@@ -242,7 +238,7 @@ class HomeScreen extends StatelessWidget {
           ),
           EcoButton(
             label: 'View Rewards',
-            onPressed: () {},
+            onPressed: () => context.read<NavigationState>().setResidentIndex(2),
             fullWidth: false,
             type: EcoButtonType.text,
           ),

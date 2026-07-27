@@ -7,7 +7,7 @@ class Reward {
   final String description;
   final int pointsCost;
   final String category;
-  
+
   /// Identifier for the UI icon (e.g., "coffee", "shopping_basket")
   final String icon;
 
@@ -66,10 +66,10 @@ class RewardRedemption {
   final String id;
   final String rewardId;
   final String userId;
-  
+
   /// Unique voucher or claim code generated upon redemption
   final String redemptionCode;
-  
+
   final DateTime timestamp;
   final RewardStatus status;
 

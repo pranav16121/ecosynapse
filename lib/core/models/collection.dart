@@ -6,10 +6,10 @@ class CollectionRequest {
   final String binId;
   final String communityId;
   final CollectionStatus status;
-  
+
   /// Priority level (e.g., 1 for Low, 5 for Critical/Full)
   final int priority;
-  
+
   final DateTime createdAt;
   final DateTime? scheduledAt;
   final DateTime? completedAt;
@@ -52,14 +52,16 @@ class CollectionRequest {
       id: json['id'] as String,
       binId: json['binId'] as String,
       communityId: json['communityId'] as String,
-      status: CollectionStatus.values.firstWhere((e) => e.name == json['status']),
+      status: CollectionStatus.values.firstWhere(
+        (e) => e.name == json['status'],
+      ),
       priority: json['priority'] as int,
       createdAt: DateTime.parse(json['createdAt'] as String),
-      scheduledAt: json['scheduledAt'] != null 
-          ? DateTime.parse(json['scheduledAt'] as String) 
+      scheduledAt: json['scheduledAt'] != null
+          ? DateTime.parse(json['scheduledAt'] as String)
           : null,
-      completedAt: json['completedAt'] != null 
-          ? DateTime.parse(json['completedAt'] as String) 
+      completedAt: json['completedAt'] != null
+          ? DateTime.parse(json['completedAt'] as String)
           : null,
     );
   }
@@ -83,10 +85,10 @@ class CollectionEvent {
   final String id;
   final String requestId;
   final String collectorId;
-  
+
   /// Total weight of waste collected in this event
   final double totalWeightKg;
-  
+
   final DateTime timestamp;
 
   CollectionEvent({

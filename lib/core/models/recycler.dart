@@ -4,10 +4,10 @@ import 'enums.dart';
 class Recycler {
   final String id;
   final String name;
-  
+
   /// Type of materials processed (e.g., "Plastic", "Organic")
   final String type;
-  
+
   final String location;
 
   Recycler({
@@ -41,12 +41,7 @@ class Recycler {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'type': type,
-      'location': location,
-    };
+    return {'id': id, 'name': name, 'type': type, 'location': location};
   }
 }
 
@@ -56,10 +51,10 @@ class RecyclingBatch {
   final String recyclerId;
   final WasteCategory category;
   final double weightKg;
-  
+
   /// Quality or purity level of the batch (0 to 100)
   final int purityPercent;
-  
+
   final DateTime timestamp;
 
   RecyclingBatch({
@@ -93,7 +88,9 @@ class RecyclingBatch {
     return RecyclingBatch(
       id: json['id'] as String,
       recyclerId: json['recyclerId'] as String,
-      category: WasteCategory.values.firstWhere((e) => e.name == json['category']),
+      category: WasteCategory.values.firstWhere(
+        (e) => e.name == json['category'],
+      ),
       weightKg: (json['weightKg'] as num).toDouble(),
       purityPercent: json['purityPercent'] as int,
       timestamp: DateTime.parse(json['timestamp'] as String),

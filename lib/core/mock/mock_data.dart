@@ -1,8 +1,17 @@
 import '../models/user.dart';
+import '../models/enums.dart';
+import '../models/smart_bin.dart';
+import '../models/collection.dart';
+import '../models/eco_score.dart';
 
 class MockData {
   static final List<Community> communities = [
-    Community(id: '1', name: 'Greenwood Residency', location: 'Bangalore'),
+    Community(
+      id: '1',
+      name: 'Greenwood Residency',
+      location: 'Bangalore',
+      activeResidentsCount: 450,
+    ),
     Community(id: '2', name: 'Lakeview Enclave', location: 'Hyderabad'),
     Community(id: '3', name: 'Prestige Tech Park', location: 'Bangalore'),
     Community(id: '4', name: 'EcoSynapse Demo Community', location: 'Mumbai'),
@@ -17,6 +26,7 @@ class MockData {
           email: 'aarav.sharma@example.com',
           role: UserRole.resident,
           communityId: '1',
+          residentId: 'RES-2026-042',
         );
       case UserRole.admin:
         return User(
@@ -43,6 +53,91 @@ class MockData {
           communityId: '1',
         );
     }
+  }
+
+  static EcoScore getCommunityEcoScore() {
+    return EcoScore(
+      overallScore: 86,
+      segregationAccuracy: 0.92,
+      recyclingRate: 0.74,
+      wasteReduction: 0.15,
+      monthlyChange: 3,
+    );
+  }
+
+  static List<SmartBin> getCommunityBins() {
+    return [
+      SmartBin(
+        id: 'BIN-A01',
+        communityId: '1',
+        location: 'Tower A Ground Floor',
+        status: BinStatus.online,
+        fillLevels: {
+          WasteCategory.wet: 42,
+          WasteCategory.dry: 30,
+          WasteCategory.recyclable: 15,
+        },
+        lastCollection: DateTime.now().subtract(const Duration(days: 1)),
+      ),
+      SmartBin(
+        id: 'BIN-B03',
+        communityId: '1',
+        location: 'Clubhouse Entrance',
+        status: BinStatus.collectionSoon,
+        fillLevels: {
+          WasteCategory.wet: 85,
+          WasteCategory.dry: 40,
+          WasteCategory.recyclable: 20,
+        },
+        lastCollection: DateTime.now().subtract(const Duration(hours: 12)),
+      ),
+      SmartBin(
+        id: 'BIN-C05',
+        communityId: '1',
+        location: 'Park Exit',
+        status: BinStatus.full,
+        fillLevels: {
+          WasteCategory.wet: 95,
+          WasteCategory.dry: 60,
+          WasteCategory.recyclable: 45,
+        },
+        lastCollection: DateTime.now().subtract(const Duration(days: 2)),
+      ),
+      SmartBin(
+        id: 'BIN-D02',
+        communityId: '1',
+        location: 'Tower D Parking',
+        status: BinStatus.online,
+        fillLevels: {
+          WasteCategory.wet: 10,
+          WasteCategory.dry: 15,
+          WasteCategory.recyclable: 5,
+        },
+        lastCollection: DateTime.now().subtract(const Duration(hours: 6)),
+      ),
+    ];
+  }
+
+  static List<CollectionRequest> getInitialRequests() {
+    return [
+      CollectionRequest(
+        id: 'REQ-101',
+        binId: 'BIN-C05',
+        communityId: '1',
+        status: CollectionStatus.pending,
+        priority: 5,
+        createdAt: DateTime.now().subtract(const Duration(hours: 2)),
+      ),
+      CollectionRequest(
+        id: 'REQ-100',
+        binId: 'BIN-B03',
+        communityId: '1',
+        status: CollectionStatus.scheduled,
+        priority: 4,
+        createdAt: DateTime.now().subtract(const Duration(hours: 5)),
+        scheduledAt: DateTime.now().add(const Duration(hours: 1)),
+      ),
+    ];
   }
 
   static Map<String, dynamic> getResidentMetrics() {

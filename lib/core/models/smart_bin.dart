@@ -6,10 +6,10 @@ class SmartBin {
   final String communityId;
   final String location;
   final BinStatus status;
-  
+
   /// Percentage fill level for each waste category (0-100)
   final Map<WasteCategory, int> fillLevels;
-  
+
   /// Timestamp of the last successful collection
   final DateTime? lastCollection;
 
@@ -73,7 +73,7 @@ class SmartBin {
   bool get isFull => fillLevels.values.any((level) => level >= 90);
 
   /// Returns the highest fill percentage across all compartments
-  int get maxFillLevel => fillLevels.values.isEmpty 
-      ? 0 
+  int get maxFillLevel => fillLevels.values.isEmpty
+      ? 0
       : fillLevels.values.reduce((a, b) => a > b ? a : b);
 }

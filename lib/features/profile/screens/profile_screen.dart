@@ -43,10 +43,7 @@ class ProfileScreen extends StatelessWidget {
   Widget _buildProfileHeader(BuildContext context, user, ResidentState state) {
     return Column(
       children: [
-        const CircleAvatar(
-          radius: 50,
-          child: Icon(Icons.person, size: 50),
-        ),
+        const CircleAvatar(radius: 50, child: Icon(Icons.person, size: 50)),
         const SizedBox(height: EcoSpacing.m),
         Text(
           user?.fullName ?? 'Aarav Sharma',
@@ -135,9 +132,13 @@ class ProfileScreen extends StatelessWidget {
       padding: EdgeInsets.zero,
       child: Column(
         children: [
-          _buildMenuItem(Icons.person_outline, 'Personal Information', () {}),
+          _buildMenuItem(Icons.person_outline, 'Personal Information', () {
+            _showComingSoon(context);
+          }),
           const Divider(height: 1),
-          _buildMenuItem(Icons.business_outlined, 'My Community', () {}),
+          _buildMenuItem(Icons.business_outlined, 'My Community', () {
+            _showComingSoon(context);
+          }),
           const Divider(height: 1),
           _buildMenuItem(
             Icons.history,
@@ -145,9 +146,13 @@ class ProfileScreen extends StatelessWidget {
             () => context.push('/activity'),
           ),
           const Divider(height: 1),
-          _buildMenuItem(Icons.settings_outlined, 'App Settings', () {}),
+          _buildMenuItem(Icons.settings_outlined, 'App Settings', () {
+            _showComingSoon(context);
+          }),
           const Divider(height: 1),
-          _buildMenuItem(Icons.help_outline, 'Help & Support', () {}),
+          _buildMenuItem(Icons.help_outline, 'Help & Support', () {
+            _showComingSoon(context);
+          }),
         ],
       ),
     );
@@ -159,6 +164,12 @@ class ProfileScreen extends StatelessWidget {
       title: Text(title, style: const TextStyle(fontSize: 14)),
       trailing: const Icon(Icons.chevron_right, size: 20),
       onTap: onTap,
+    );
+  }
+
+  void _showComingSoon(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Feature coming soon in Stage 2!')),
     );
   }
 }

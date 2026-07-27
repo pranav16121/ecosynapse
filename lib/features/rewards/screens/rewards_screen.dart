@@ -79,9 +79,9 @@ class RewardsScreen extends StatelessWidget {
             child: Text(
               '${state.ecoPoints}',
               style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           const Text('EcoPoints', style: TextStyle(color: Colors.white)),

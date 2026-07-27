@@ -4,21 +4,21 @@ import 'enums.dart';
 class PointTransaction {
   final String id;
   final String userId;
-  
+
   /// Amount of points (Positive for earned, negative for spent)
   final int amount;
-  
+
   /// Precise timestamp of the transaction
   final DateTime timestamp;
-  
+
   /// Human-readable label for the transaction (e.g., "Recycling Bonus")
   final String description;
-  
+
   final TransactionType type;
-  
+
   /// ID of the associated entity (e.g., WasteEvent ID, Reward ID, Challenge ID)
   final String? referenceId;
-  
+
   /// Extensible storage for transaction context
   final Map<String, dynamic> metadata;
 
@@ -83,7 +83,7 @@ class PointTransaction {
 
   /// True if points were added to the balance
   bool get isEarned => amount > 0;
-  
+
   /// True if points were deducted from the balance
   bool get isSpent => amount < 0;
 }

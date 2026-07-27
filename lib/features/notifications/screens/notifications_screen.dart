@@ -48,10 +48,7 @@ class NotificationsScreen extends StatelessWidget {
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        n['message'],
-                        softWrap: true,
-                      ),
+                      Text(n['message'], softWrap: true),
                       const SizedBox(height: 4),
                       Text(
                         n['time'],

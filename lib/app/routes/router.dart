@@ -12,7 +12,7 @@ import '../../features/resident/screens/resident_main_screen.dart';
 import '../../features/resident/screens/activity_history_screen.dart';
 import '../../features/bins/screens/bin_detail_screen.dart';
 import '../../features/notifications/screens/notifications_screen.dart';
-import '../../features/admin/screens/admin_landing.dart';
+import '../../features/admin/screens/admin_main_screen.dart';
 import '../../features/collector/screens/collector_landing.dart';
 import '../../features/recycler/screens/recycler_landing.dart';
 
@@ -84,7 +84,7 @@ class AppRouter {
       ),
       GoRoute(
         path: '/admin',
-        builder: (context, state) => const AdminLanding(),
+        builder: (context, state) => const AdminMainScreen(),
       ),
       GoRoute(
         path: '/collector',

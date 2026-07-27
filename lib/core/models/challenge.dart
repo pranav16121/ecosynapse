@@ -8,7 +8,7 @@ class Challenge {
   final int rewardPoints;
   final DateTime deadline;
   final ChallengeType type;
-  
+
   /// Target value to complete the challenge (e.g., 5.0 kg of waste reduction)
   final double? goalValue;
 
@@ -72,10 +72,10 @@ class ChallengeParticipation {
   final String id;
   final String challengeId;
   final String userId;
-  
+
   /// Current progress towards the challenge goal (0.0 to 1.0)
   final double currentProgress;
-  
+
   final ChallengeStatus status;
 
   ChallengeParticipation({
@@ -108,7 +108,9 @@ class ChallengeParticipation {
       challengeId: json['challengeId'] as String,
       userId: json['userId'] as String,
       currentProgress: (json['currentProgress'] as num).toDouble(),
-      status: ChallengeStatus.values.firstWhere((e) => e.name == json['status']),
+      status: ChallengeStatus.values.firstWhere(
+        (e) => e.name == json['status'],
+      ),
     );
   }
 

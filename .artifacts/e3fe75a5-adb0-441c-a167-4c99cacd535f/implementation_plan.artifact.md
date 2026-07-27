@@ -1,73 +1,69 @@
-# Implementation Plan - Core Domain Models & Enums
+# Implementation Plan - Phase 1: Admin UI
 
-This plan covers the definition of all core domain models and enums for the EcoSynapse ecosystem. This provides the type-safe foundation for data handling without changing the existing UI or state.
+This phase focuses on replacing the Admin placeholder with a comprehensive community-management dashboard. It introduces a shared "Operational State" to facilitate interactions between Admin, Collector, and Recycler roles while keeping the Resident experience isolated and stable.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> - **Existing Models**: I will update `User` and `Community` in `lib/core/models/user.dart` to include the new fields. This is backward-compatible as I will use optional parameters in the constructor or sensible defaults.
-> - **WasteEvent**: This is designed as a detailed ledger entry for every disposal, capturing AI and sensor metadata.
-> - **Relationships**: All models will refer to each other via `String id` fields rather than object references to simplify serialization and state updates.
+> - **Operational State**: I will create a new `OperationalState` provider. This will be the shared source of truth for Bins, Collection Requests, and Recycling Batches.
+> - **Navigation**: Admin will have a 4-tab bottom navigation (Overview, Bins, Logistics, Community).
+> - **Model Reuse**: I will use the recently created `SmartBin`, `CollectionRequest`, `EcoScore`, and `Challenge` models to ensure type safety.
 
-## Proposed Enums
+## Proposed Changes
 
-### [NEW] [enums.dart](file:///E:/Projects/ecosynapse/lib/core/models/enums.dart)
-- `UserRole`: `resident`, `admin`, `collector`, `recycler`
-- `WasteCategory`: `wet`, `dry`, `recyclable`, `hazardous`, `unknown`
-- `BinStatus`: `online`, `offline`, `maintenance`, `full`, `collectionSoon`
-- `TransactionType`: `earned`, `spent`, `adjustment`
-- `CollectionStatus`: `pending`, `scheduled`, `inProgress`, `completed`, `cancelled`
-- `VerificationStatus`: `pending`, `verified`, `disputed`
+### Core & State
 
-## Proposed Models
+#### [NEW] [operational_state.dart](file:///E:/Projects/ecosynapse/lib/core/state/operational_state.dart)
+- Manages `List<SmartBin>`, `List<CollectionRequest>`, and `List<RecyclingBatch>`.
+- Provides methods for Admin to trigger collection requests (mocked).
+- Provides methods for status updates that will be consumed by Collector and Recycler in future phases.
 
-### Core Identity
-#### [MODIFY] [user.dart](file:///E:/Projects/ecosynapse/lib/core/models/user.dart)
-- `User`: `id`, `fullName`, `email`, `role`, `communityId`, `residentId?`, `joinedDate?`, `badges` (List<String>)
-- `Community`: `id`, `name`, `location`, `ecoScore?`, `rank?`, `activeResidentsCount?`
+#### [MODIFY] [mock_data.dart](file:///E:/Projects/ecosynapse/lib/core/mock/mock_data.dart)
+- Add functions to return `List<SmartBin>`, `List<CollectionRequest>`, and community-level `EcoScore` model instances.
 
-### Waste Management
-#### [NEW] [smart_bin.dart](file:///E:/Projects/ecosynapse/lib/core/models/smart_bin.dart)
-- `SmartBin`: `id`, `location`, `status`, `fillLevels` (Map<WasteCategory, int>), `lastCollection?`
+### Admin Feature Screens
 
-#### [NEW] [waste_event.dart](file:///E:/Projects/ecosynapse/lib/core/models/waste_event.dart)
-- `WasteEvent`: `id`, `userId`, `communityId`, `binId`, `predictedCategory`, `confidence`, `weightKg`, `timestamp`, `compartment`, `verificationStatus`, `pointsAwarded`
+#### [NEW] [AdminMainScreen](file:///E:/Projects/ecosynapse/lib/features/admin/screens/admin_main_screen.dart)
+- Persistent bottom navigation for Admin role.
+- Tabs: Overview, Bins, Logistics, Community.
 
-### Scoring & Finance
-#### [NEW] [eco_score.dart](file:///E:/Projects/ecosynapse/lib/core/models/eco_score.dart)
-- `EcoScore`: `overallScore`, `segregationAccuracy`, `recyclingRate`, `wasteReduction`, `monthlyChange`
+#### [NEW] [AdminOverviewScreen](file:///E:/Projects/ecosynapse/lib/features/admin/screens/admin_overview_screen.dart)
+- **Hero Card**: Community EcoScore ring (e.g., 86/100).
+- **Metric Grid**: Total Waste, Diverted Weight (1.2 Tons), Recycling Rate (74%), Active Residents (450).
+- **Charts**: Community waste generation trends using `fl_chart`.
+- **Urgent Alerts**: List of full bins requiring attention.
 
-#### [NEW] [point_transaction.dart](file:///E:/Projects/ecosynapse/lib/core/models/point_transaction.dart)
-- `PointTransaction`: `id`, `amount`, `timestamp`, `description`, `type`, `metadata` (Map)
+#### [NEW] [AdminBinsScreen](file:///E:/Projects/ecosynapse/lib/features/admin/screens/admin_bins_screen.dart)
+- Filterable list of all community bins.
+- Show fill levels per category (Wet/Dry/Recyclable).
+- Quick action: "Request Collection" for bins > 80% full.
 
-### Rewards & Challenges
-#### [NEW] [reward.dart](file:///E:/Projects/ecosynapse/lib/core/models/reward.dart)
-- `Reward`: `id`, `title`, `description`, `pointsCost`, `category`, `icon`
-- `RewardRedemption`: `id`, `rewardId`, `userId`, `timestamp`, `status`
+#### [NEW] [AdminLogisticsScreen](file:///E:/Projects/ecosynapse/lib/features/admin/screens/admin_logistics_screen.dart)
+- Overview of all `CollectionRequest` instances.
+- Status tracking: Pending, Scheduled, Completed.
+- Priority indicators (1-5).
 
-#### [NEW] [challenge.dart](file:///E:/Projects/ecosynapse/lib/core/models/challenge.dart)
-- `Challenge`: `id`, `title`, `description`, `rewardPoints`, `deadline`, `goalWeight?`
-- `ChallengeParticipation`: `id`, `challengeId`, `userId`, `progress`, `status`
+#### [NEW] [AdminCommunityScreen](file:///E:/Projects/ecosynapse/lib/features/admin/screens/admin_community_screen.dart)
+- Community-wide challenge monitoring.
+- High-level resident leaderboard (Top 5 participants).
+- Engagement statistics.
 
-### Logistics & Messaging
-#### [NEW] [notification.dart](file:///E:/Projects/ecosynapse/lib/core/models/notification.dart)
-- `Notification`: `id`, `userId`, `title`, `message`, `timestamp`, `isRead`
+### Navigation & App Setup
 
-#### [NEW] [collection.dart](file:///E:/Projects/ecosynapse/lib/core/models/collection.dart)
-- `CollectionRequest`: `id`, `binId`, `communityId`, `timestamp`, `status`
-- `CollectionEvent`: `id`, `requestId`, `collectorId`, `weightCollected`, `timestamp`
+#### [MODIFY] [router.dart](file:///E:/Projects/ecosynapse/lib/app/routes/router.dart)
+- Update `/admin` route to point to `AdminMainScreen`.
 
-### Recycling
-#### [NEW] [recycler.dart](file:///E:/Projects/ecosynapse/lib/core/models/recycler.dart)
-- `Recycler`: `id`, `name`, `type`, `location`
-- `RecyclingBatch`: `id`, `recyclerId`, `category`, `weight`, `purity`, `timestamp`
+#### [MODIFY] [main.dart](file:///E:/Projects/ecosynapse/lib/main.dart)
+- Register `OperationalState` in the `MultiProvider` list.
 
 ## Verification Plan
 
 ### Automated Tests
-- `flutter analyze`: Ensure no type errors or missing required fields.
-- `flutter test`: Run existing tests to ensure no regressions in current functionality.
-- **New Domain Tests**: Create `test/domain_model_test.dart` to verify `fromJson` and `copyWith` logic for each new model.
+- `flutter analyze`: Ensure 0 errors.
+- `flutter test`: Verify that Admin navigation works and metrics render at 360dp width.
 
 ### Manual Verification
-- Verify that `User` and `Community` can still be initialized by existing code in `MockData` and `AuthState` without modification (using defaults or nullability).
+- Navigate to Admin via Role Selector.
+- Verify bottom navigation works between all 4 Admin tabs.
+- Ensure all charts and metric cards fit on 360dp width without overflow.
+- Confirm "Request Collection" button adds a request to the Logistics tab (mocked state update).

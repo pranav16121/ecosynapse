@@ -1,4 +1,3 @@
-export 'enums.dart';
 import 'enums.dart';
 
 /// Represents any actor within the EcoSynapse ecosystem
@@ -8,13 +7,13 @@ class User {
   final String email;
   final UserRole role;
   final String communityId;
-  
+
   /// Unique resident identifier for community display (e.g., "RES-2026-042")
   final String? residentId;
-  
+
   /// Date when the user joined the ecosystem
   final DateTime? joinedDate;
-  
+
   /// List of badge IDs or names earned by the user
   final List<String> badges;
 
@@ -59,10 +58,14 @@ class User {
       role: UserRole.values.firstWhere((e) => e.name == json['role']),
       communityId: json['communityId'] as String,
       residentId: json['residentId'] as String?,
-      joinedDate: json['joinedDate'] != null 
-          ? DateTime.parse(json['joinedDate'] as String) 
+      joinedDate: json['joinedDate'] != null
+          ? DateTime.parse(json['joinedDate'] as String)
           : null,
-      badges: (json['badges'] as List<dynamic>?)?.map((e) => e as String).toList() ?? [],
+      badges:
+          (json['badges'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          [],
     );
   }
 
@@ -85,7 +88,7 @@ class Community {
   final String id;
   final String name;
   final String location;
-  
+
   /// Number of residents currently active in this community
   final int? activeResidentsCount;
 

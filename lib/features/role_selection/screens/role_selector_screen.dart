@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/dimens.dart';
-import '../../../core/models/user.dart';
+import '../../../core/models/enums.dart';
 import '../../../core/state/auth_state.dart';
 import '../../../core/widgets/eco_card.dart';
 

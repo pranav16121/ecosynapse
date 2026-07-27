@@ -117,10 +117,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   items: MockData.communities.map((c) {
                     return DropdownMenuItem(
                       value: c.id,
-                      child: Text(
-                        c.name,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                      child: Text(c.name, overflow: TextOverflow.ellipsis),
                     );
                   }).toList(),
                   onChanged: (val) =>

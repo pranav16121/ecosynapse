@@ -33,10 +33,7 @@ void main() {
           ChangeNotifierProvider(create: (_) => AuthState()),
           ChangeNotifierProvider(create: (_) => ResidentState()),
         ],
-        child: MaterialApp(
-          theme: EcoTheme.light,
-          home: screen,
-        ),
+        child: MaterialApp(theme: EcoTheme.light, home: screen),
       ),
     );
 
@@ -59,7 +56,11 @@ void main() {
     });
 
     testWidgets('Role Selector', (tester) async {
-      await testScreen(tester, screen: const RoleSelectorScreen(), name: 'RoleSelector');
+      await testScreen(
+        tester,
+        screen: const RoleSelectorScreen(),
+        name: 'RoleSelector',
+      );
       expect(find.text('Choose your experience'), findsOneWidget);
     });
 
@@ -79,7 +80,11 @@ void main() {
     });
 
     testWidgets('Community Screen', (tester) async {
-      await testScreen(tester, screen: const CommunityScreen(), name: 'Community');
+      await testScreen(
+        tester,
+        screen: const CommunityScreen(),
+        name: 'Community',
+      );
       expect(find.text('Community Hub'), findsOneWidget);
     });
 
@@ -99,7 +104,11 @@ void main() {
     });
 
     testWidgets('Collector Landing', (tester) async {
-      await testScreen(tester, screen: const CollectorLanding(), name: 'Collector');
+      await testScreen(
+        tester,
+        screen: const CollectorLanding(),
+        name: 'Collector',
+      );
       expect(find.text('Collector Experience'), findsOneWidget);
     });
   });

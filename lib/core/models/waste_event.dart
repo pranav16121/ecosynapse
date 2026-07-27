@@ -6,40 +6,40 @@ class WasteEvent {
   final String userId;
   final String communityId;
   final String binId;
-  
+
   /// The waste category predicted by the on-device or cloud AI
   final WasteCategory? predictedCategory;
-  
+
   /// The confidence score of the AI prediction (0.0 to 1.0)
   final double? confidence;
-  
+
   /// The final verified category. Verfication may happen asynchronously.
   final WasteCategory? finalCategory;
-  
+
   /// The weight of the waste in kilograms, as measured by bin sensors
   final double weightKg;
-  
+
   /// Timestamp when the disposal occurred
   final DateTime timestamp;
-  
+
   /// The physical bin compartment where the waste was deposited
   final WasteCategory targetCompartment;
-  
+
   /// Current status of the event classification verification
   final VerificationStatus verificationStatus;
-  
+
   /// AI Model version used for inference
   final String? modelVersion;
-  
+
   /// Time taken for AI inference in milliseconds
   final int? inferenceTimeMs;
-  
+
   /// Reference to the image captured during disposal (e.g., cloud storage path)
   final String? imageReference;
 
   /// Flexible storage for additional AI-related metadata
   final Map<String, dynamic> aiMetadata;
-  
+
   /// Flexible storage for raw sensor logs or environment data
   final Map<String, dynamic> sensorMetadata;
 
@@ -108,14 +108,22 @@ class WasteEvent {
       binId: json['binId'] as String,
       weightKg: (json['weightKg'] as num).toDouble(),
       timestamp: DateTime.parse(json['timestamp'] as String),
-      targetCompartment: WasteCategory.values.firstWhere((e) => e.name == json['targetCompartment']),
-      verificationStatus: VerificationStatus.values.firstWhere((e) => e.name == json['verificationStatus']),
-      predictedCategory: json['predictedCategory'] != null 
-          ? WasteCategory.values.firstWhere((e) => e.name == json['predictedCategory'])
+      targetCompartment: WasteCategory.values.firstWhere(
+        (e) => e.name == json['targetCompartment'],
+      ),
+      verificationStatus: VerificationStatus.values.firstWhere(
+        (e) => e.name == json['verificationStatus'],
+      ),
+      predictedCategory: json['predictedCategory'] != null
+          ? WasteCategory.values.firstWhere(
+              (e) => e.name == json['predictedCategory'],
+            )
           : null,
       confidence: (json['confidence'] as num?)?.toDouble(),
-      finalCategory: json['finalCategory'] != null 
-          ? WasteCategory.values.firstWhere((e) => e.name == json['finalCategory'])
+      finalCategory: json['finalCategory'] != null
+          ? WasteCategory.values.firstWhere(
+              (e) => e.name == json['finalCategory'],
+            )
           : null,
       modelVersion: json['modelVersion'] as String?,
       inferenceTimeMs: json['inferenceTimeMs'] as int?,
@@ -147,5 +155,6 @@ class WasteEvent {
   }
 
   /// Returns true if the user segregated correctly (Final matches Target)
-  bool get isCorrectSegregation => (finalCategory ?? predictedCategory) == targetCompartment;
+  bool get isCorrectSegregation =>
+      (finalCategory ?? predictedCategory) == targetCompartment;
 }

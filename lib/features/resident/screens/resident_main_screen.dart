@@ -1,36 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../core/state/navigation_state.dart';
 import 'home_screen.dart';
 import '../../impact/screens/impact_screen.dart';
 import '../../rewards/screens/rewards_screen.dart';
 import '../../community/screens/community_screen.dart';
 import '../../profile/screens/profile_screen.dart';
 
-class ResidentMainScreen extends StatefulWidget {
+class ResidentMainScreen extends StatelessWidget {
   const ResidentMainScreen({super.key});
 
-  @override
-  State<ResidentMainScreen> createState() => _ResidentMainScreenState();
-}
-
-class _ResidentMainScreenState extends State<ResidentMainScreen> {
-  int _selectedIndex = 0;
-
-  final List<Widget> _screens = [
-    const HomeScreen(),
-    const ImpactScreen(),
-    const RewardsScreen(),
-    const CommunityScreen(),
-    const ProfileScreen(),
+  final List<Widget> _screens = const [
+    HomeScreen(),
+    ImpactScreen(),
+    RewardsScreen(),
+    CommunityScreen(),
+    ProfileScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
+    final selectedIndex = context.watch<NavigationState>().residentIndex;
+
     return Scaffold(
-      body: IndexedStack(index: _selectedIndex, children: _screens),
+      body: IndexedStack(index: selectedIndex, children: _screens),
       bottomNavigationBar: NavigationBar(
-        selectedIndex: _selectedIndex,
+        selectedIndex: selectedIndex,
         onDestinationSelected: (index) =>
-            setState(() => _selectedIndex = index),
+            context.read<NavigationState>().setResidentIndex(index),
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),

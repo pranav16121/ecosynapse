@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/user.dart';
+import '../models/enums.dart';
 import '../mock/mock_data.dart';
 
 class AuthState extends ChangeNotifier {

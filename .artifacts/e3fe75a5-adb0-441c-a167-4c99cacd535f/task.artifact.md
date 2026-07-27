@@ -1,22 +1,26 @@
-# Task List - Core Domain Model Foundation
+# Task List - Phase 1: Admin UI
 
-- [ ] Define Enums
-    - [ ] Create `lib/core/models/enums.dart` with `UserRole`, `WasteCategory`, `BinStatus`, `TransactionType`, `CollectionStatus`, `VerificationStatus`, `ChallengeStatus`, `RewardStatus`, `ChallengeType`, `NotificationType`.
-- [ ] Update Existing Models (Backward Compatible)
-    - [ ] Update `User` and `Community` in `lib/core/models/user.dart`.
-- [ ] Implement Waste Management Models
-    - [ ] Create `lib/core/models/smart_bin.dart`.
-    - [ ] Create `lib/core/models/waste_event.dart` (with AI metadata).
-- [ ] Implement Scoring & Point Models
-    - [ ] Create `lib/core/models/eco_score.dart`.
-    - [ ] Create `lib/core/models/point_transaction.dart`.
-- [ ] Implement Gamification Models
-    - [ ] Create `lib/core/models/reward.dart` (Reward & Redemption).
-    - [ ] Create `lib/core/models/challenge.dart` (Challenge & Participation).
-- [ ] Implement Support Models
-    - [ ] Create `lib/core/models/notification.dart`.
-    - [ ] Create `lib/core/models/collection.dart` (Request & Event).
-    - [ ] Create `lib/core/models/recycler.dart` (Recycler & Batch).
-- [ ] Validation
-    - [ ] Run `flutter analyze`.
-    - [ ] Run `flutter test`.
+- [ ] Operational State & Mock Data Extension
+    - [ ] Create `lib/core/state/operational_state.dart`
+    - [ ] Add model-based mock data to `lib/core/mock/mock_data.dart`
+    - [ ] Register `OperationalState` in `lib/main.dart`
+- [ ] Admin Navigation & Routing
+    - [ ] Create `lib/features/admin/screens/admin_main_screen.dart`
+    - [ ] Update `/admin` route in `lib/app/routes/router.dart`
+- [ ] Admin Overview Dashboard
+    - [ ] Implement `lib/features/admin/screens/admin_overview_screen.dart`
+    - [ ] Add Community EcoScore ring and key metrics
+    - [ ] Add urgent alerts and recent activity
+- [ ] Admin Bins Management
+    - [ ] Implement `lib/features/admin/screens/admin_bins_screen.dart`
+    - [ ] Add list of smart bins with status and fill levels
+- [ ] Admin Logistics Tracking
+    - [ ] Implement `lib/features/admin/screens/admin_logistics_screen.dart`
+    - [ ] Add collection requests with priority and status
+- [ ] Admin Community Insights
+    - [ ] Implement `lib/features/admin/screens/admin_community_screen.dart`
+    - [ ] Add participation stats and leaderboard summary
+- [ ] Final Validation
+    - [ ] Run `flutter analyze`
+    - [ ] Run `flutter test`
+    - [ ] Manual responsive check at 360dp

@@ -4,6 +4,8 @@ import 'app/routes/router.dart';
 import 'app/theme/theme.dart';
 import 'core/state/auth_state.dart';
 import 'core/state/resident_state.dart';
+import 'core/state/operational_state.dart';
+import 'core/state/navigation_state.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,6 +14,8 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthState()),
         ChangeNotifierProvider(create: (_) => ResidentState()),
+        ChangeNotifierProvider(create: (_) => OperationalState()),
+        ChangeNotifierProvider(create: (_) => NavigationState()),
       ],
       child: const EcoSynapseApp(),
     ),

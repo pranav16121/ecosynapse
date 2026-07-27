@@ -26,4 +26,11 @@ enum RewardStatus { available, redeemed, expired }
 enum ChallengeType { reduction, segregation, recycling, community }
 
 /// Categories for application notifications
-enum NotificationType { points, challenge, collection, system, reward, community }
+enum NotificationType {
+  points,
+  challenge,
+  collection,
+  system,
+  reward,
+  community,
+}

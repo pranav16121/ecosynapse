@@ -153,11 +153,7 @@ class _ImpactScreenState extends State<ImpactScreen> {
               if (isNarrow) ...[
                 SizedBox(
                   height: 150,
-                  child: PieChart(
-                    PieChartData(
-                      sections: _buildPieSections(),
-                    ),
-                  ),
+                  child: PieChart(PieChartData(sections: _buildPieSections())),
                 ),
                 const SizedBox(height: EcoSpacing.l),
                 _buildLegend(),
@@ -168,9 +164,7 @@ class _ImpactScreenState extends State<ImpactScreen> {
                       height: 150,
                       width: 150,
                       child: PieChart(
-                        PieChartData(
-                          sections: _buildPieSections(),
-                        ),
+                        PieChartData(sections: _buildPieSections()),
                       ),
                     ),
                     const SizedBox(width: EcoSpacing.l),
@@ -270,7 +264,10 @@ class _ImpactScreenState extends State<ImpactScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text(
+                  title,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
                 Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
               ],
             ),
