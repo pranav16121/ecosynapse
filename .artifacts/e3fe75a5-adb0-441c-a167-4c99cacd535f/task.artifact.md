@@ -1,19 +1,22 @@
-# Task List - Responsive UI & Test Refactor
+# Task List - Core Domain Model Foundation
 
-- [x] Refactor `test/responsive_test.dart`
-    - [x] Create `testScreen` helper
-    - [x] Add direct screen tests for all major features
-- [x] Audit & Refactor Rewards Marketplace
-    - [x] `rewards_screen.dart`: Points summary & Reward cards
-- [x] Audit & Refactor Notifications & History
-    - [x] `notifications_screen.dart`: Long message wrapping
-    - [x] `activity_history_screen.dart`: Value column spacing
-- [x] Audit & Refactor Admin & Collector Dashboards
-    - [x] `admin_landing.dart`: Metrics cards wrap
-    - [x] `collector_landing.dart`: Metrics cards wrap
-- [x] Global Widget Audit
-    - [x] `eco_text_field.dart`: Suffix icon safety
-- [x] Final Validation
-    - [x] `flutter analyze`
-    - [x] `flutter test`
-    - [x] `flutter test test/responsive_test.dart`
+- [ ] Define Enums
+    - [ ] Create `lib/core/models/enums.dart` with `UserRole`, `WasteCategory`, `BinStatus`, `TransactionType`, `CollectionStatus`, `VerificationStatus`, `ChallengeStatus`, `RewardStatus`, `ChallengeType`, `NotificationType`.
+- [ ] Update Existing Models (Backward Compatible)
+    - [ ] Update `User` and `Community` in `lib/core/models/user.dart`.
+- [ ] Implement Waste Management Models
+    - [ ] Create `lib/core/models/smart_bin.dart`.
+    - [ ] Create `lib/core/models/waste_event.dart` (with AI metadata).
+- [ ] Implement Scoring & Point Models
+    - [ ] Create `lib/core/models/eco_score.dart`.
+    - [ ] Create `lib/core/models/point_transaction.dart`.
+- [ ] Implement Gamification Models
+    - [ ] Create `lib/core/models/reward.dart` (Reward & Redemption).
+    - [ ] Create `lib/core/models/challenge.dart` (Challenge & Participation).
+- [ ] Implement Support Models
+    - [ ] Create `lib/core/models/notification.dart`.
+    - [ ] Create `lib/core/models/collection.dart` (Request & Event).
+    - [ ] Create `lib/core/models/recycler.dart` (Recycler & Batch).
+- [ ] Validation
+    - [ ] Run `flutter analyze`.
+    - [ ] Run `flutter test`.
