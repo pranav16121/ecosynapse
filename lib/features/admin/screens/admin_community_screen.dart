@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../core/constants/dimens.dart';
 import '../../../core/mock/mock_data.dart';
+import '../../../core/state/operational_state.dart';
 import '../../../core/widgets/eco_card.dart';
 
 class AdminCommunityScreen extends StatelessWidget {
@@ -8,6 +10,8 @@ class AdminCommunityScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final opState = context.watch<OperationalState>();
+
     return Scaffold(
       appBar: AppBar(title: const Text('Community Insights')),
       body: SingleChildScrollView(
@@ -15,7 +19,7 @@ class AdminCommunityScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildParticipationStats(context),
+            _buildParticipationStats(context, opState),
             const SizedBox(height: EcoSpacing.l),
             Text(
               'Leaderboard Summary',
@@ -37,7 +41,10 @@ class AdminCommunityScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildParticipationStats(BuildContext context) {
+  Widget _buildParticipationStats(
+    BuildContext context,
+    OperationalState opState,
+  ) {
     return EcoCard(
       child: Column(
         children: [
@@ -47,7 +54,7 @@ class AdminCommunityScreen extends StatelessWidget {
             mainAxisSpacing: EcoSpacing.m,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            childAspectRatio: 1.4,
+            childAspectRatio: 1.2, // Improved for 360dp
             children: [
               _buildStatItem(
                 context,
@@ -59,7 +66,7 @@ class AdminCommunityScreen extends StatelessWidget {
               _buildStatItem(
                 context,
                 'Accuracy',
-                '91%',
+                '${(opState.communityRecycleRate * 1.1).clamp(0, 99).toStringAsFixed(0)}%',
                 Icons.check_circle_outline,
                 Colors.green,
               ),
@@ -72,7 +79,7 @@ class AdminCommunityScreen extends StatelessWidget {
               ),
               _buildStatItem(
                 context,
-                'Impact Badges',
+                'Badges',
                 '1,240',
                 Icons.workspace_premium_outlined,
                 Colors.amber,
@@ -94,18 +101,18 @@ class AdminCommunityScreen extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(icon, color: color, size: 24),
+        Icon(icon, color: color, size: 22),
         const SizedBox(height: EcoSpacing.s),
         FittedBox(
           fit: BoxFit.scaleDown,
           child: Text(
             value,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
           ),
         ),
         Text(
           label,
-          style: Theme.of(context).textTheme.bodySmall,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 10),
           textAlign: TextAlign.center,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,

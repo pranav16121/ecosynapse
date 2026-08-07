@@ -46,14 +46,14 @@ class ProfileScreen extends StatelessWidget {
         const CircleAvatar(radius: 50, child: Icon(Icons.person, size: 50)),
         const SizedBox(height: EcoSpacing.m),
         Text(
-          user?.fullName ?? 'Aarav Sharma',
-          style: Theme.of(
-            context,
-          ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+          'Pranav Powell',
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        Text(
+        const Text(
           'Greenwood Residency | ID: RES-2026-042',
-          style: Theme.of(context).textTheme.bodySmall,
+          style: TextStyle(color: Colors.grey),
         ),
         const SizedBox(height: EcoSpacing.l),
         Wrap(

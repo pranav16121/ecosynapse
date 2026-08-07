@@ -13,8 +13,8 @@ import '../../features/resident/screens/activity_history_screen.dart';
 import '../../features/bins/screens/bin_detail_screen.dart';
 import '../../features/notifications/screens/notifications_screen.dart';
 import '../../features/admin/screens/admin_main_screen.dart';
-import '../../features/collector/screens/collector_landing.dart';
-import '../../features/recycler/screens/recycler_landing.dart';
+import '../../features/collector/screens/collector_main_screen.dart';
+import '../../features/recycler/screens/recycler_main_screen.dart';
 
 class AppRouter {
   static final router = GoRouter(
@@ -88,11 +88,11 @@ class AppRouter {
       ),
       GoRoute(
         path: '/collector',
-        builder: (context, state) => const CollectorLanding(),
+        builder: (context, state) => const CollectorMainScreen(),
       ),
       GoRoute(
         path: '/recycler',
-        builder: (context, state) => const RecyclerLanding(),
+        builder: (context, state) => const RecyclerMainScreen(),
       ),
     ],
   );

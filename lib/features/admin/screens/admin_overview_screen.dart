@@ -36,7 +36,7 @@ class AdminOverviewScreen extends StatelessWidget {
               const SizedBox(height: EcoSpacing.l),
               _buildEcoScoreHero(context, ecoScore),
               const SizedBox(height: EcoSpacing.l),
-              _buildMetricGrid(context),
+              _buildMetricGrid(context, opState),
               const SizedBox(height: EcoSpacing.l),
               _buildWasteTrendChart(context),
               const SizedBox(height: EcoSpacing.l),
@@ -134,26 +134,26 @@ class AdminOverviewScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMetricGrid(BuildContext context) {
+  Widget _buildMetricGrid(BuildContext context, OperationalState opState) {
     return GridView.count(
       crossAxisCount: 2,
       crossAxisSpacing: EcoSpacing.m,
       mainAxisSpacing: EcoSpacing.m,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      childAspectRatio: 1.2,
+      childAspectRatio: 1.25, // Optimized for 360dp
       children: [
         _buildSmallMetric(
           context,
           'Total Waste',
-          '1.2 Tons',
+          '${(opState.totalCommunityWasteKg / 1000).toStringAsFixed(1)} Tons',
           Icons.delete_outline,
           Colors.blue,
         ),
         _buildSmallMetric(
           context,
           'Diverted',
-          '840 kg',
+          '${opState.totalDivertedKg.toStringAsFixed(0)} kg',
           Icons.recycling,
           Colors.green,
         ),
@@ -167,7 +167,7 @@ class AdminOverviewScreen extends StatelessWidget {
         _buildSmallMetric(
           context,
           'Recycle Rate',
-          '74%',
+          '${opState.communityRecycleRate.toStringAsFixed(0)}%',
           Icons.auto_graph,
           Colors.teal,
         ),
@@ -188,18 +188,19 @@ class AdminOverviewScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, color: color, size: 20),
+          Icon(icon, color: color, size: 22),
           const SizedBox(height: EcoSpacing.s),
           FittedBox(
             fit: BoxFit.scaleDown,
             child: Text(
               value,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
             ),
           ),
+          const SizedBox(height: 2),
           Text(
             label,
-            style: Theme.of(context).textTheme.bodySmall,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 10),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),

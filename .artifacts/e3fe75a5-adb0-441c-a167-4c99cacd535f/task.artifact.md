@@ -1,26 +1,20 @@
-# Task List - Phase 1: Admin UI
+# Task List - Final EcoSynapse UI Polish
 
-- [ ] Operational State & Mock Data Extension
-    - [ ] Create `lib/core/state/operational_state.dart`
-    - [ ] Add model-based mock data to `lib/core/mock/mock_data.dart`
-    - [ ] Register `OperationalState` in `lib/main.dart`
-- [ ] Admin Navigation & Routing
-    - [ ] Create `lib/features/admin/screens/admin_main_screen.dart`
-    - [ ] Update `/admin` route in `lib/app/routes/router.dart`
-- [ ] Admin Overview Dashboard
-    - [ ] Implement `lib/features/admin/screens/admin_overview_screen.dart`
-    - [ ] Add Community EcoScore ring and key metrics
-    - [ ] Add urgent alerts and recent activity
-- [ ] Admin Bins Management
-    - [ ] Implement `lib/features/admin/screens/admin_bins_screen.dart`
-    - [ ] Add list of smart bins with status and fill levels
-- [ ] Admin Logistics Tracking
-    - [ ] Implement `lib/features/admin/screens/admin_logistics_screen.dart`
-    - [ ] Add collection requests with priority and status
-- [ ] Admin Community Insights
-    - [ ] Implement `lib/features/admin/screens/admin_community_screen.dart`
-    - [ ] Add participation stats and leaderboard summary
-- [ ] Final Validation
-    - [ ] Run `flutter analyze`
-    - [ ] Run `flutter test`
-    - [ ] Manual responsive check at 360dp
+- [ ] Populate Realistic Mock Data
+    - [ ] Update `MockData` with 50+ unique data points
+    - [ ] Update `OperationalState` initialization logic
+- [ ] Collector Module Polish
+    - [ ] Redesign collection cards with Enterprise layout
+    - [ ] Polish History screen with realistic records
+    - [ ] Update Profile with "Ramesh Kumar" details
+- [ ] Recycler Module Polish
+    - [ ] Enhance Incoming screen (Batch IDs, Source Context)
+    - [ ] Polish Recovery Analytics (CO2, Landfill metrics)
+    - [ ] Update Profile with "EcoCycle Bangalore" details
+- [ ] Global SIH Demo Audit
+    - [ ] Update Resident Profile "Pranav Powell"
+    - [ ] Symmetry pass on Admin grids
+    - [ ] Final 360dp responsiveness check (All screens)
+- [ ] Validation
+    - [ ] `flutter analyze`
+    - [ ] `flutter test`

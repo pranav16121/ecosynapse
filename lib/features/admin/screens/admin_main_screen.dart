@@ -30,7 +30,8 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<OperationalState>().initialize(
         MockData.getCommunityBins(),
-        MockData.getInitialRequests(),
+        [...MockData.getInitialRequests(), ...MockData.getCompletedCollections()],
+        [...MockData.getIncomingBatches(), ...MockData.getProcessedHistory()],
       );
     });
   }

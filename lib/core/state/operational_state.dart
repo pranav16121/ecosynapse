@@ -9,13 +9,27 @@ class OperationalState extends ChangeNotifier {
   List<CollectionRequest> _collectionRequests = [];
   List<RecyclingBatch> _recyclingBatches = [];
 
+  // Community aggregate metrics (Mock)
+  double _totalCommunityWasteKg = 1240.0;
+  double _totalDivertedKg = 840.0;
+  double _communityRecycleRate = 74.0;
+
   List<SmartBin> get bins => _bins;
   List<CollectionRequest> get collectionRequests => _collectionRequests;
   List<RecyclingBatch> get recyclingBatches => _recyclingBatches;
 
-  void initialize(List<SmartBin> bins, List<CollectionRequest> requests) {
+  double get totalCommunityWasteKg => _totalCommunityWasteKg;
+  double get totalDivertedKg => _totalDivertedKg;
+  double get communityRecycleRate => _communityRecycleRate;
+
+  void initialize(
+    List<SmartBin> bins,
+    List<CollectionRequest> requests,
+    List<RecyclingBatch> incoming,
+  ) {
     _bins = bins;
     _collectionRequests = requests;
+    _recyclingBatches = incoming;
     notifyListeners();
   }
 
@@ -75,20 +89,58 @@ class OperationalState extends ChangeNotifier {
         completedAt: completedAt,
       );
 
-      // If completed, reset the bin fill levels
+      // If completed, reset the bin fill levels and create a recycling batch
       if (status == CollectionStatus.completed) {
         final binIndex = _bins.indexWhere((b) => b.id == request.binId);
         if (binIndex != -1) {
-          _bins[binIndex] = _bins[binIndex].copyWith(
-            fillLevels: _bins[binIndex].fillLevels.map(
-              (key, value) => MapEntry(key, 0),
-            ),
+          final bin = _bins[binIndex];
+          _bins[binIndex] = bin.copyWith(
+            fillLevels: bin.fillLevels.map((key, value) => MapEntry(key, 0)),
             lastCollection: DateTime.now(),
             status: BinStatus.online,
           );
+
+          double collectedWeight = 0;
+          // Create batches for each compartment that had waste
+          bin.fillLevels.forEach((category, level) {
+            if (level > 0) {
+              double weight = (level * 0.4); // Mock: 1% fill = 0.4kg
+              collectedWeight += weight;
+              _recyclingBatches.insert(
+                0,
+                RecyclingBatch(
+                  id: 'BAT-${DateTime.now().millisecondsSinceEpoch.toString().substring(8)}',
+                  recyclerId: 'rec_1',
+                  category: category,
+                  weightKg: weight,
+                  purityPercent: 0,
+                  timestamp: DateTime.now(),
+                ),
+              );
+            }
+          });
+
+          _totalCommunityWasteKg += collectedWeight;
+          _totalDivertedKg += collectedWeight;
         }
       }
 
+      notifyListeners();
+    }
+  }
+
+  void processBatch(String batchId, int purity) {
+    final index = _recyclingBatches.indexWhere((b) => b.id == batchId);
+    if (index != -1) {
+      _recyclingBatches[index] = _recyclingBatches[index].copyWith(
+        purityPercent: purity,
+      );
+
+      // Update community metrics based on purity
+      if (purity > 0) {
+        _communityRecycleRate =
+            (_communityRecycleRate * 0.9) + (purity * 0.1); // Mock weighted avg
+      }
       notifyListeners();
     }
   }

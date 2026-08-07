@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:ecosynapse/core/state/auth_state.dart';
 import 'package:ecosynapse/core/state/resident_state.dart';
 import 'package:ecosynapse/app/theme/theme.dart';
+import 'package:ecosynapse/core/state/operational_state.dart';
+import 'package:ecosynapse/core/state/navigation_state.dart';
 import 'package:ecosynapse/features/auth/screens/login_screen.dart';
 import 'package:ecosynapse/features/auth/screens/signup_screen.dart';
 import 'package:ecosynapse/features/role_selection/screens/role_selector_screen.dart';
@@ -13,8 +15,9 @@ import 'package:ecosynapse/features/rewards/screens/rewards_screen.dart';
 import 'package:ecosynapse/features/community/screens/community_screen.dart';
 import 'package:ecosynapse/features/profile/screens/profile_screen.dart';
 import 'package:ecosynapse/features/bins/screens/bins_screen.dart';
-import 'package:ecosynapse/features/admin/screens/admin_landing.dart';
-import 'package:ecosynapse/features/collector/screens/collector_landing.dart';
+import 'package:ecosynapse/features/admin/screens/admin_main_screen.dart';
+import 'package:ecosynapse/features/collector/screens/collector_main_screen.dart';
+import 'package:ecosynapse/features/recycler/screens/recycler_main_screen.dart';
 
 void main() {
   Future<void> testScreen(
@@ -32,6 +35,8 @@ void main() {
         providers: [
           ChangeNotifierProvider(create: (_) => AuthState()),
           ChangeNotifierProvider(create: (_) => ResidentState()),
+          ChangeNotifierProvider(create: (_) => OperationalState()),
+          ChangeNotifierProvider(create: (_) => NavigationState()),
         ],
         child: MaterialApp(theme: EcoTheme.light, home: screen),
       ),
@@ -98,18 +103,19 @@ void main() {
       expect(find.text('Smart Bins'), findsOneWidget);
     });
 
-    testWidgets('Admin Landing', (tester) async {
-      await testScreen(tester, screen: const AdminLanding(), name: 'Admin');
-      expect(find.text('Admin Experience'), findsOneWidget);
+    testWidgets('Admin Main', (tester) async {
+      await testScreen(tester, screen: const AdminMainScreen(), name: 'AdminMain');
+      expect(find.byType(AdminMainScreen), findsOneWidget);
     });
 
-    testWidgets('Collector Landing', (tester) async {
-      await testScreen(
-        tester,
-        screen: const CollectorLanding(),
-        name: 'Collector',
-      );
-      expect(find.text('Collector Experience'), findsOneWidget);
+    testWidgets('Collector Main', (tester) async {
+      await testScreen(tester, screen: const CollectorMainScreen(), name: 'CollectorMain');
+      expect(find.byType(CollectorMainScreen), findsOneWidget);
+    });
+
+    testWidgets('Recycler Main', (tester) async {
+      await testScreen(tester, screen: const RecyclerMainScreen(), name: 'RecyclerMain');
+      expect(find.byType(RecyclerMainScreen), findsOneWidget);
     });
   });
 }
