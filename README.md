@@ -1,16 +1,11 @@
-# ecosynapse
+# EcoSynapse
 
-A new Flutter project.
+EcoSynapse is an intelligent waste-management ecosystem combining smart bins, IoT sensing, software, data analytics, AI/algorithms and waste-collection management.
 
-## Getting Started
+## Repository structure
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- `/app` -> Flutter mobile application
+- `/website` -> EcoSynapse website
+- `/backend` -> backend/API/database
+- `/hardware` -> ESP32 and embedded systems
+- `/docs` -> project documentation
