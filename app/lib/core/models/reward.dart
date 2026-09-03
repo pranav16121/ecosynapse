@@ -49,6 +49,34 @@ class Reward {
     );
   }
 
+  /// Converts a Supabase database row from `public.rewards` into a [Reward] model
+  factory Reward.fromSupabase(Map<String, dynamic> json) {
+    final cat = (json['category'] ?? '').toString().toLowerCase();
+    String iconName = 'card_giftcard';
+    if (cat.contains('apartment') || cat.contains('perk')) {
+      iconName = 'home';
+    } else if (cat.contains('garden') || cat.contains('eco')) {
+      iconName = 'eco';
+    } else if (cat.contains('lifestyle') || cat.contains('event')) {
+      iconName = 'star';
+    } else if (cat.contains('recognition') || cat.contains('badge')) {
+      iconName = 'emoji_events';
+    } else if (cat.contains('food')) {
+      iconName = 'coffee';
+    } else if (cat.contains('shop')) {
+      iconName = 'shopping_basket';
+    }
+
+    return Reward(
+      id: json['id']?.toString() ?? '',
+      title: json['title']?.toString() ?? '',
+      description: json['description']?.toString() ?? '',
+      pointsCost: (json['cost_points'] ?? json['pointsCost'] ?? 0) as int,
+      category: json['category']?.toString() ?? 'General',
+      icon: json['icon']?.toString() ?? iconName,
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,

@@ -7,56 +7,63 @@ import '../../../core/mock/mock_data.dart';
 import '../../../core/widgets/eco_button.dart';
 import '../../../core/widgets/eco_text_field.dart';
 
-class SignupScreen extends StatefulWidget {
-  const SignupScreen({super.key});
+class ResidentSignupScreen extends StatefulWidget {
+  const ResidentSignupScreen({super.key});
 
   @override
-  State<SignupScreen> createState() => _SignupScreenState();
+  State<ResidentSignupScreen> createState() => _ResidentSignupScreenState();
 }
 
-class _SignupScreenState extends State<SignupScreen> {
+class _ResidentSignupScreenState extends State<ResidentSignupScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
+  final _flatNoController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  String? _selectedCommunityId;
-  bool _isLoading = false;
+  String? _selectedCommunityId = '1';
 
   void _onSignup() async {
     if (_formKey.currentState!.validate()) {
       if (_passwordController.text != _confirmPasswordController.text) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Passwords do not match')));
-        return;
-      }
-      if (_selectedCommunityId == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please select a community')),
+          const SnackBar(content: Text('Passwords do not match')),
         );
         return;
       }
 
-      setState(() => _isLoading = true);
+      final authState = context.read<AuthState>();
+      if (authState.isLoading) return; // Prevent duplicate button presses
+
       try {
-        await context.read<AuthState>().signUp(
-          fullName: _nameController.text,
-          email: _emailController.text,
-          communityId: _selectedCommunityId!,
+        await authState.signUp(
+          fullName: _nameController.text.trim(),
+          email: _emailController.text.trim(),
+          communityId: _selectedCommunityId ?? '1',
           password: _passwordController.text,
+          flatNo: _flatNoController.text.trim(),
         );
         if (mounted) {
-          context.go('/role-selector');
+          context.go('/resident');
         }
-      } finally {
-        if (mounted) setState(() => _isLoading = false);
+      } catch (e) {
+        if (mounted) {
+          final msg = authState.errorMessage ?? e.toString().replaceAll('AuthException:', '').trim();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(msg),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
+        }
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final authState = context.watch<AuthState>();
+
     return Scaffold(
       appBar: AppBar(backgroundColor: Colors.transparent),
       body: SafeArea(
@@ -68,15 +75,14 @@ class _SignupScreenState extends State<SignupScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  'Create Account',
-                  key: const Key('signup_title'),
-                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                  'Create Resident Account',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
-                const SizedBox(height: EcoSpacing.s),
+                const SizedBox(height: EcoSpacing.xs),
                 Text(
-                  'Join the movement for a greener future.',
+                  'Join your community for a greener, sustainable future.',
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 const SizedBox(height: EcoSpacing.xl),
@@ -85,17 +91,25 @@ class _SignupScreenState extends State<SignupScreen> {
                   hintText: 'Enter your full name',
                   controller: _nameController,
                   validator: (value) =>
-                      value?.isEmpty ?? true ? 'Enter your name' : null,
+                      value?.trim().isEmpty ?? true ? 'Enter your name' : null,
                 ),
                 const SizedBox(height: EcoSpacing.m),
                 EcoTextField(
-                  label: 'Email',
+                  label: 'Email Address',
                   hintText: 'Enter your email',
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) => value?.contains('@') ?? false
                       ? null
-                      : 'Enter valid email',
+                      : 'Enter a valid email address',
+                ),
+                const SizedBox(height: EcoSpacing.m),
+                EcoTextField(
+                  label: 'Flat / Apartment Number',
+                  hintText: 'e.g. Tower A - 402',
+                  controller: _flatNoController,
+                  validator: (value) =>
+                      value?.trim().isEmpty ?? true ? 'Enter your flat number' : null,
                 ),
                 const SizedBox(height: EcoSpacing.m),
                 Text(
@@ -123,13 +137,11 @@ class _SignupScreenState extends State<SignupScreen> {
                   }).toList(),
                   onChanged: (val) =>
                       setState(() => _selectedCommunityId = val),
-                  validator: (val) =>
-                      val == null ? 'Please select a community' : null,
                 ),
                 const SizedBox(height: EcoSpacing.m),
                 EcoTextField(
                   label: 'Password',
-                  hintText: 'Create a password',
+                  hintText: 'Create a password (min 6 characters)',
                   controller: _passwordController,
                   obscureText: true,
                   validator: (value) =>
@@ -141,19 +153,21 @@ class _SignupScreenState extends State<SignupScreen> {
                   hintText: 'Confirm your password',
                   controller: _confirmPasswordController,
                   obscureText: true,
+                  validator: (value) =>
+                      value?.isEmpty ?? true ? 'Confirm your password' : null,
                 ),
                 const SizedBox(height: EcoSpacing.l),
                 EcoButton(
-                  label: 'Create Account',
+                  label: 'Create Resident Account',
                   onPressed: _onSignup,
-                  isLoading: _isLoading,
+                  isLoading: authState.isLoading,
                 ),
                 const SizedBox(height: EcoSpacing.l),
                 Wrap(
                   alignment: WrapAlignment.center,
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    const Text('Already have an account?'),
+                    const Text('Already have a Resident account?'),
                     TextButton(
                       onPressed: () => context.pop(),
                       child: const Text('Sign In'),

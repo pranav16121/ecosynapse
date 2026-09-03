@@ -58,6 +58,40 @@ class SmartBin {
     );
   }
 
+  /// Converts a Supabase database row from `public.bins` into a [SmartBin] model
+  factory SmartBin.fromSupabase(Map<String, dynamic> json) {
+    final bool isOnline = json['is_online'] as bool? ?? true;
+    final int overallFill = (json['overall_fill'] as num? ?? 0).toInt();
+    final int dryFill = (json['dry_fill'] as num? ?? 0).toInt();
+    final int wetFill = (json['wet_fill'] as num? ?? 0).toInt();
+
+    BinStatus status;
+    if (!isOnline) {
+      status = BinStatus.offline;
+    } else if (overallFill >= 90 || dryFill >= 90 || wetFill >= 90) {
+      status = BinStatus.full;
+    } else if (overallFill >= 75 || dryFill >= 75 || wetFill >= 75) {
+      status = BinStatus.collectionSoon;
+    } else {
+      status = BinStatus.online;
+    }
+
+    return SmartBin(
+      id: json['id']?.toString() ?? '',
+      communityId: json['community_id']?.toString() ?? json['communityId']?.toString() ?? '1',
+      location: json['location']?.toString() ?? json['name']?.toString() ?? 'Unknown Location',
+      status: status,
+      fillLevels: {
+        WasteCategory.dry: dryFill,
+        WasteCategory.wet: wetFill,
+        WasteCategory.recyclable: overallFill,
+      },
+      lastCollection: json['last_updated'] != null
+          ? DateTime.tryParse(json['last_updated'].toString())
+          : null,
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,

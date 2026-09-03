@@ -6,8 +6,11 @@ import 'package:ecosynapse/core/state/resident_state.dart';
 import 'package:ecosynapse/app/theme/theme.dart';
 import 'package:ecosynapse/core/state/operational_state.dart';
 import 'package:ecosynapse/core/state/navigation_state.dart';
-import 'package:ecosynapse/features/auth/screens/login_screen.dart';
-import 'package:ecosynapse/features/auth/screens/signup_screen.dart';
+import 'package:ecosynapse/features/auth/screens/resident_login_screen.dart';
+import 'package:ecosynapse/features/auth/screens/resident_signup_screen.dart';
+import 'package:ecosynapse/features/auth/screens/admin_login_screen.dart';
+import 'package:ecosynapse/features/auth/screens/collector_login_screen.dart';
+import 'package:ecosynapse/features/auth/screens/recycler_login_screen.dart';
 import 'package:ecosynapse/features/role_selection/screens/role_selector_screen.dart';
 import 'package:ecosynapse/features/resident/screens/home_screen.dart';
 import 'package:ecosynapse/features/impact/screens/impact_screen.dart';
@@ -16,6 +19,7 @@ import 'package:ecosynapse/features/community/screens/community_screen.dart';
 import 'package:ecosynapse/features/profile/screens/profile_screen.dart';
 import 'package:ecosynapse/features/bins/screens/bins_screen.dart';
 import 'package:ecosynapse/features/admin/screens/admin_main_screen.dart';
+import 'package:ecosynapse/features/admin/screens/admin_accounts_screen.dart';
 import 'package:ecosynapse/features/collector/screens/collector_main_screen.dart';
 import 'package:ecosynapse/features/recycler/screens/recycler_main_screen.dart';
 
@@ -26,7 +30,6 @@ void main() {
     required String name,
     double width = 360,
   }) async {
-    // Set viewport
     tester.view.physicalSize = Size(width * 3, 800 * 3);
     tester.view.devicePixelRatio = 3.0;
 
@@ -43,21 +46,32 @@ void main() {
     );
 
     await tester.pumpAndSettle();
-
-    // Check for overflows by looking at logs or exceptions.
-    // Flutter test will fail automatically if a RenderFlex overflow is detected in many environments,
-    // or we can check the error log if needed.
   }
 
-  group('Responsive Audit - 360dp Width', () {
-    testWidgets('Login Screen', (tester) async {
-      await testScreen(tester, screen: const LoginScreen(), name: 'Login');
-      expect(find.text('Welcome Back'), findsOneWidget);
+  group('Responsive Audit - 360dp Width Portals', () {
+    testWidgets('Resident Login Screen', (tester) async {
+      await testScreen(tester, screen: const ResidentLoginScreen(), name: 'ResidentLogin');
+      expect(find.text('Resident Portal'), findsOneWidget);
     });
 
-    testWidgets('Signup Screen', (tester) async {
-      await testScreen(tester, screen: const SignupScreen(), name: 'Signup');
-      expect(find.byKey(const Key('signup_title')), findsOneWidget);
+    testWidgets('Resident Signup Screen', (tester) async {
+      await testScreen(tester, screen: const ResidentSignupScreen(), name: 'ResidentSignup');
+      expect(find.text('Create Resident Account'), findsAtLeastNWidgets(1));
+    });
+
+    testWidgets('Admin Login Screen', (tester) async {
+      await testScreen(tester, screen: const AdminLoginScreen(), name: 'AdminLogin');
+      expect(find.text('Admin Operations Portal'), findsOneWidget);
+    });
+
+    testWidgets('Collector Login Screen', (tester) async {
+      await testScreen(tester, screen: const CollectorLoginScreen(), name: 'CollectorLogin');
+      expect(find.text('Collector Portal'), findsOneWidget);
+    });
+
+    testWidgets('Recycler Login Screen', (tester) async {
+      await testScreen(tester, screen: const RecyclerLoginScreen(), name: 'RecyclerLogin');
+      expect(find.text('Recycler Portal'), findsOneWidget);
     });
 
     testWidgets('Role Selector', (tester) async {
@@ -66,7 +80,7 @@ void main() {
         screen: const RoleSelectorScreen(),
         name: 'RoleSelector',
       );
-      expect(find.text('Choose your experience'), findsOneWidget);
+      expect(find.text('EcoSynapse'), findsOneWidget);
     });
 
     testWidgets('Resident Home', (tester) async {
@@ -106,6 +120,11 @@ void main() {
     testWidgets('Admin Main', (tester) async {
       await testScreen(tester, screen: const AdminMainScreen(), name: 'AdminMain');
       expect(find.byType(AdminMainScreen), findsOneWidget);
+    });
+
+    testWidgets('Admin Accounts Screen', (tester) async {
+      await testScreen(tester, screen: const AdminAccountsScreen(), name: 'AdminAccounts');
+      expect(find.text('Account Management'), findsOneWidget);
     });
 
     testWidgets('Collector Main', (tester) async {

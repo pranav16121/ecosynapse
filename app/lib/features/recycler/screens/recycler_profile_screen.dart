@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/dimens.dart';
 import '../../../core/state/auth_state.dart';
@@ -23,9 +24,32 @@ class RecyclerProfileScreen extends StatelessWidget {
             const SizedBox(height: EcoSpacing.xl),
             _buildMenu(context),
             const SizedBox(height: EcoSpacing.xl),
-            TextButton(
-              onPressed: () => context.read<AuthState>().logout(),
-              child: const Text('Log Out', style: TextStyle(color: Colors.red)),
+            Wrap(
+              alignment: WrapAlignment.spaceEvenly,
+              spacing: EcoSpacing.m,
+              runSpacing: EcoSpacing.s,
+              children: [
+                OutlinedButton.icon(
+                  onPressed: () async {
+                    await context.read<AuthState>().logout();
+                    if (context.mounted) {
+                      context.go('/auth-portal');
+                    }
+                  },
+                  icon: const Icon(Icons.swap_horiz, size: 18),
+                  label: const Text('Switch Portal'),
+                ),
+                TextButton.icon(
+                  onPressed: () async {
+                    await context.read<AuthState>().logout();
+                    if (context.mounted) {
+                      context.go('/auth-portal');
+                    }
+                  },
+                  icon: const Icon(Icons.logout, size: 18, color: Colors.red),
+                  label: const Text('Log Out', style: TextStyle(color: Colors.red)),
+                ),
+              ],
             ),
           ],
         ),

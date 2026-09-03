@@ -1,18 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/dimens.dart';
+import '../../../core/repositories/user_repository.dart';
+import '../../../core/services/supabase_service.dart';
 import '../../../core/state/resident_state.dart';
 import '../../../core/mock/mock_data.dart';
 import '../../../core/widgets/eco_card.dart';
 import '../../../core/widgets/eco_button.dart';
 
-class CommunityScreen extends StatelessWidget {
+class CommunityScreen extends StatefulWidget {
   const CommunityScreen({super.key});
+
+  @override
+  State<CommunityScreen> createState() => _CommunityScreenState();
+}
+
+class _CommunityScreenState extends State<CommunityScreen> {
+  final UserRepository _userRepository = UserRepository();
+  List<Map<String, dynamic>> _liveLeaderboard = [];
+  bool _isLoadingLeaderboard = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLiveLeaderboard();
+  }
+
+  Future<void> _loadLiveLeaderboard() async {
+    if (!SupabaseService.instance.isInitialized) return;
+    setState(() => _isLoadingLeaderboard = true);
+    try {
+      final leaderboard = await _userRepository.getLeaderboard();
+      if (mounted && leaderboard.isNotEmpty) {
+        setState(() {
+          _liveLeaderboard = leaderboard;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error loading live leaderboard: $e');
+    } finally {
+      if (mounted) setState(() => _isLoadingLeaderboard = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Community Hub')),
+      appBar: AppBar(
+        title: const Text('Community Hub'),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(EcoSpacing.l),
         child: Column(
@@ -20,13 +56,27 @@ class CommunityScreen extends StatelessWidget {
           children: [
             _buildCommunityStats(context),
             const SizedBox(height: EcoSpacing.xl),
-            Text('Leaderboard', style: Theme.of(context).textTheme.titleLarge),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(child: Text('Leaderboard', style: Theme.of(context).textTheme.titleLarge)),
+                if (_isLoadingLeaderboard)
+                  const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
+              ],
+            ),
             const SizedBox(height: EcoSpacing.m),
             _buildLeaderboard(context),
             const SizedBox(height: EcoSpacing.xl),
-            Text(
-              'Active Challenges',
-              style: Theme.of(context).textTheme.titleLarge,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(child: Text('Community Challenges', style: Theme.of(context).textTheme.titleLarge)),
+                Chip(
+                  label: const Text('Simulated', style: TextStyle(fontSize: 9)),
+                  visualDensity: VisualDensity.compact,
+                  backgroundColor: Colors.orange.withValues(alpha: 0.1),
+                ),
+              ],
             ),
             const SizedBox(height: EcoSpacing.m),
             _buildChallenges(context),
@@ -51,10 +101,10 @@ class CommunityScreen extends StatelessWidget {
                     Text(
                       'Greenwood Residency',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
-                    const Text('Rank #2 in Bangalore South'),
+                    const Text('Bangalore Society'),
                   ],
                 ),
               ),
@@ -79,19 +129,23 @@ class CommunityScreen extends StatelessWidget {
   }
 
   Widget _buildLeaderboard(BuildContext context) {
+    final leaderboardData = _liveLeaderboard.isNotEmpty
+        ? _liveLeaderboard
+        : MockData.communityLeaderboard;
+
     return EcoCard(
       padding: EdgeInsets.zero,
       child: ListView.separated(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        itemCount: MockData.communityLeaderboard.length,
+        itemCount: leaderboardData.length,
         separatorBuilder: (context, index) => const Divider(height: 1),
         itemBuilder: (context, index) {
-          final resident = MockData.communityLeaderboard[index];
+          final resident = leaderboardData[index];
           final bool isMe = resident['isCurrent'] ?? false;
           return Container(
             color: isMe
-                ? Theme.of(context).colorScheme.primary.withOpacity(0.05)
+                ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.05)
                 : null,
             padding: const EdgeInsets.symmetric(
               horizontal: EcoSpacing.l,
@@ -99,27 +153,54 @@ class CommunityScreen extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Text(
-                  '${index + 1}',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey,
-                  ),
-                ),
-                const SizedBox(width: EcoSpacing.m),
-                const CircleAvatar(radius: 16, backgroundColor: Colors.grey),
-                const SizedBox(width: EcoSpacing.m),
-                Expanded(
+                SizedBox(
+                  width: 24,
                   child: Text(
-                    resident['name'],
+                    '${index + 1}',
                     style: TextStyle(
-                      fontWeight: isMe ? FontWeight.bold : FontWeight.normal,
+                      fontWeight: FontWeight.bold,
+                      color: index < 3 ? Theme.of(context).colorScheme.primary : Colors.grey,
                     ),
                   ),
                 ),
-                Text(
-                  '${resident['score']}',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                const SizedBox(width: EcoSpacing.s),
+                CircleAvatar(
+                  radius: 16,
+                  backgroundColor: index == 0
+                      ? Colors.amber.withValues(alpha: 0.2)
+                      : Theme.of(context).colorScheme.surfaceContainerHighest,
+                  child: Icon(
+                    index == 0 ? Icons.emoji_events : Icons.person,
+                    size: 16,
+                    color: index == 0 ? Colors.amber : Colors.grey,
+                  ),
+                ),
+                const SizedBox(width: EcoSpacing.m),
+                Expanded(
+                  child: Text(
+                    resident['name'] ?? 'User',
+                    style: TextStyle(
+                      fontWeight: isMe ? FontWeight.bold : FontWeight.normal,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      '${resident['points'] ?? 0} pts',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                    Text(
+                      'Score: ${resident['score'] ?? 0}',
+                      style: const TextStyle(fontSize: 10, color: Colors.grey),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -161,8 +242,8 @@ class CommunityScreen extends StatelessWidget {
                       ),
                       decoration: BoxDecoration(
                         color: challenge['status'] == 'Active'
-                            ? Colors.green.withOpacity(0.1)
-                            : Colors.orange.withOpacity(0.1),
+                            ? Colors.green.withValues(alpha: 0.1)
+                            : Colors.orange.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(EcoRadius.small),
                       ),
                       child: Text(

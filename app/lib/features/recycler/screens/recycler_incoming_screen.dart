@@ -4,6 +4,7 @@ import '../../../core/constants/dimens.dart';
 import '../../../core/models/enums.dart';
 import '../../../core/models/recycler.dart';
 import '../../../core/state/operational_state.dart';
+import '../../../core/state/navigation_state.dart';
 import '../../../core/widgets/eco_card.dart';
 import '../../../core/widgets/eco_button.dart';
 
@@ -20,7 +21,44 @@ class RecyclerIncomingScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Incoming Batches')),
       body: pendingBatches.isEmpty
-          ? const Center(child: Text('No incoming batches at the moment.'))
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(EcoSpacing.xl),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.inventory_2_outlined,
+                      size: 64,
+                      color: Colors.teal,
+                    ),
+                    const SizedBox(height: EcoSpacing.m),
+                    Text(
+                      'All Batches Processed',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: EcoSpacing.s),
+                    Text(
+                      'All incoming recyclable materials have been processed or logged.',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: EcoSpacing.xl),
+                    EcoButton(
+                      label: 'View Recovery Analytics',
+                      onPressed: () => context
+                          .read<NavigationState>()
+                          .setRecyclerIndex(1),
+                      type: EcoButtonType.primary,
+                      fullWidth: false,
+                    ),
+                  ],
+                ),
+              ),
+            )
           : ListView.builder(
               padding: const EdgeInsets.all(EcoSpacing.l),
               itemCount: pendingBatches.length,
@@ -44,12 +82,15 @@ class RecyclerIncomingScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'ID: ${batch.id}',
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.1,
-                      ),
+                Expanded(
+                  child: Text(
+                    'ID: ${batch.id}',
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.1,
+                        ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
                 _buildCategoryChip(batch.category),
               ],
@@ -59,9 +100,12 @@ class RecyclerIncomingScreen extends StatelessWidget {
               children: [
                 const Icon(Icons.business_outlined, size: 16, color: Colors.grey),
                 const SizedBox(width: 4),
-                const Text(
-                  'Source: Greenwood Residency',
-                  style: TextStyle(fontWeight: FontWeight.w600),
+                const Expanded(
+                  child: Text(
+                    'Source: Greenwood Residency',
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ],
             ),
@@ -100,7 +144,7 @@ class RecyclerIncomingScreen extends StatelessWidget {
                   label: 'Reject',
                   type: EcoButtonType.secondary,
                   fullWidth: false,
-                  onPressed: () => _showRejectDialog(context, batch),
+                  onPressed: () => _showRejectDialog(context, batch, opState),
                 ),
               ],
             ),
@@ -145,7 +189,7 @@ class RecyclerIncomingScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.teal.withOpacity(0.1),
+        color: Colors.teal.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(EcoRadius.small),
       ),
       child: Text(
@@ -159,7 +203,11 @@ class RecyclerIncomingScreen extends StatelessWidget {
     );
   }
 
-  void _showRejectDialog(BuildContext context, RecyclingBatch batch) {
+  void _showRejectDialog(
+    BuildContext context,
+    RecyclingBatch batch,
+    OperationalState opState,
+  ) {
     showDialog(
       context: context,
       builder:
@@ -176,8 +224,9 @@ class RecyclerIncomingScreen extends StatelessWidget {
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
+                  opState.rejectBatch(batch.id);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Batch rejection reported.')),
+                    SnackBar(content: Text('Batch ${batch.id} rejected and logged.')),
                   );
                 },
                 child: const Text('Confirm Rejection'),
@@ -252,7 +301,7 @@ class RecyclerIncomingScreen extends StatelessWidget {
                       onPressed: () async {
                         Navigator.pop(context);
                         _showProcessingAnimation(context);
-                        await Future.delayed(const Duration(milliseconds: 1500));
+                        await Future.delayed(const Duration(milliseconds: 1000));
                         opState.processBatch(batch.id, purity);
                         if (context.mounted) {
                           Navigator.pop(context);

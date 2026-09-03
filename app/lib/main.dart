@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'app/routes/router.dart';
 import 'app/theme/theme.dart';
+import 'core/services/supabase_service.dart';
 import 'core/state/auth_state.dart';
 import 'core/state/resident_state.dart';
 import 'core/state/operational_state.dart';
 import 'core/state/navigation_state.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SupabaseService.instance.initialize();
+
   runApp(
     MultiProvider(
       providers: [

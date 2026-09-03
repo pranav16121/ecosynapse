@@ -52,6 +52,33 @@ class EcoNotification {
     );
   }
 
+  /// Converts a Supabase database row from `public.system_events` into an [EcoNotification] model
+  factory EcoNotification.fromSupabase(Map<String, dynamic> json) {
+    final rawType = (json['type'] ?? 'system').toString().toLowerCase();
+    NotificationType nType = NotificationType.system;
+    if (rawType.contains('point')) {
+      nType = NotificationType.points;
+    } else if (rawType.contains('collection') || rawType.contains('bin') || rawType.contains('fill')) {
+      nType = NotificationType.collection;
+    } else if (rawType.contains('challenge')) {
+      nType = NotificationType.challenge;
+    } else if (rawType.contains('reward')) {
+      nType = NotificationType.reward;
+    }
+
+    return EcoNotification(
+      id: json['id']?.toString() ?? '',
+      userId: json['user_id']?.toString() ?? json['userId']?.toString() ?? '',
+      title: json['type']?.toString() ?? json['title']?.toString() ?? 'System Event',
+      message: json['message']?.toString() ?? '',
+      timestamp: json['timestamp'] != null
+          ? DateTime.tryParse(json['timestamp'].toString()) ?? DateTime.now()
+          : DateTime.now(),
+      type: nType,
+      isRead: json['is_read'] as bool? ?? false,
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,

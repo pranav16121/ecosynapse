@@ -38,8 +38,8 @@ class EcoTheme {
       ),
       navigationBarTheme: NavigationBarThemeData(
         height: 72,
-        labelTextStyle: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return const TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w600,
@@ -48,8 +48,8 @@ class EcoTheme {
           }
           return const TextStyle(fontSize: 10, color: EcoColors.textSecondary);
         }),
-        iconTheme: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return const IconThemeData(size: 24, color: Colors.white);
           }
           return const IconThemeData(size: 24, color: EcoColors.textSecondary);
@@ -93,8 +93,8 @@ class EcoTheme {
       ),
       navigationBarTheme: NavigationBarThemeData(
         height: 72,
-        labelTextStyle: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return const TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w600,
@@ -106,8 +106,8 @@ class EcoTheme {
             color: EcoColors.textSecondaryDark,
           );
         }),
-        iconTheme: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return const IconThemeData(size: 24, color: Colors.white);
           }
           return const IconThemeData(

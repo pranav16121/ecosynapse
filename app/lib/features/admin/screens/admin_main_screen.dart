@@ -7,6 +7,7 @@ import 'admin_overview_screen.dart';
 import 'admin_bins_screen.dart';
 import 'admin_logistics_screen.dart';
 import 'admin_community_screen.dart';
+import 'admin_accounts_screen.dart';
 
 class AdminMainScreen extends StatefulWidget {
   const AdminMainScreen({super.key});
@@ -21,12 +22,12 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
     AdminBinsScreen(),
     AdminLogisticsScreen(),
     AdminCommunityScreen(),
+    AdminAccountsScreen(),
   ];
 
   @override
   void initState() {
     super.initState();
-    // Initialize operational state with mock data
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<OperationalState>().initialize(
         MockData.getCommunityBins(),
@@ -38,36 +39,51 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final selectedIndex = context.watch<NavigationState>().adminIndex;
+    final rawIndex = context.watch<NavigationState>().adminIndex;
+    final selectedIndex = rawIndex >= _screens.length ? 0 : rawIndex;
 
-    return Scaffold(
-      body: IndexedStack(index: selectedIndex, children: _screens),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: selectedIndex,
-        onDestinationSelected: (index) =>
-            context.read<NavigationState>().setAdminIndex(index),
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.dashboard_outlined),
-            selectedIcon: Icon(Icons.dashboard),
-            label: 'Overview',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.delete_outline),
-            selectedIcon: Icon(Icons.delete),
-            label: 'Bins',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.local_shipping_outlined),
-            selectedIcon: Icon(Icons.local_shipping),
-            label: 'Logistics',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.people_outline),
-            selectedIcon: Icon(Icons.people),
-            label: 'Community',
-          ),
-        ],
+    return PopScope(
+      canPop: selectedIndex == 0,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        if (selectedIndex != 0) {
+          context.read<NavigationState>().setAdminIndex(0);
+        }
+      },
+      child: Scaffold(
+        body: IndexedStack(index: selectedIndex, children: _screens),
+        bottomNavigationBar: NavigationBar(
+          selectedIndex: selectedIndex,
+          onDestinationSelected: (index) =>
+              context.read<NavigationState>().setAdminIndex(index),
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.dashboard_outlined),
+              selectedIcon: Icon(Icons.dashboard),
+              label: 'Overview',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.delete_outline),
+              selectedIcon: Icon(Icons.delete),
+              label: 'Bins',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.local_shipping_outlined),
+              selectedIcon: Icon(Icons.local_shipping),
+              label: 'Logistics',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.people_outline),
+              selectedIcon: Icon(Icons.people),
+              label: 'Community',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.manage_accounts_outlined),
+              selectedIcon: Icon(Icons.manage_accounts),
+              label: 'Accounts',
+            ),
+          ],
+        ),
       ),
     );
   }

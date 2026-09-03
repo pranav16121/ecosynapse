@@ -16,31 +16,41 @@ class CollectorMainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final selectedIndex = context.watch<NavigationState>().collectorIndex;
+    final navState = context.watch<NavigationState>();
+    final selectedIndex = navState.collectorIndex;
 
-    return Scaffold(
-      body: IndexedStack(index: selectedIndex, children: _screens),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: selectedIndex,
-        onDestinationSelected: (index) =>
-            context.read<NavigationState>().setCollectorIndex(index),
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.local_shipping_outlined),
-            selectedIcon: Icon(Icons.local_shipping),
-            label: 'Collections',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.history),
-            selectedIcon: Icon(Icons.history),
-            label: 'History',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
+    return PopScope(
+      canPop: selectedIndex == 0,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        if (selectedIndex != 0) {
+          context.read<NavigationState>().setCollectorIndex(0);
+        }
+      },
+      child: Scaffold(
+        body: IndexedStack(index: selectedIndex, children: _screens),
+        bottomNavigationBar: NavigationBar(
+          selectedIndex: selectedIndex,
+          onDestinationSelected: (index) =>
+              context.read<NavigationState>().setCollectorIndex(index),
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.local_shipping_outlined),
+              selectedIcon: Icon(Icons.local_shipping),
+              label: 'Collections',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.history),
+              selectedIcon: Icon(Icons.history),
+              label: 'History',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.person_outline),
+              selectedIcon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ],
+        ),
       ),
     );
   }

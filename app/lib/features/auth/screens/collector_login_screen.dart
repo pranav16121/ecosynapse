@@ -2,54 +2,71 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/dimens.dart';
+import '../../../core/models/enums.dart';
 import '../../../core/state/auth_state.dart';
 import '../../../core/widgets/eco_button.dart';
 import '../../../core/widgets/eco_text_field.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class CollectorLoginScreen extends StatefulWidget {
+  const CollectorLoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<CollectorLoginScreen> createState() => _CollectorLoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _CollectorLoginScreenState extends State<CollectorLoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _isLoading = false;
   bool _obscurePassword = true;
-  bool _rememberMe = false;
+
+  void _fillDemoCredentials() {
+    setState(() {
+      _emailController.text = 'demo.collector@ecosynapse.app';
+      _passwordController.text = 'EcoSynapse@2026';
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Collector demo credentials populated.'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
 
   void _onLogin() async {
     if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
+      final authState = context.read<AuthState>();
+      if (authState.isLoading) return;
+
       try {
-        await context.read<AuthState>().login(
-          _emailController.text,
-          _passwordController.text,
+        await authState.loginForRole(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+          expectedRole: UserRole.collector,
         );
         if (mounted) {
-          context.go('/role-selector');
+          context.go('/collector');
         }
       } catch (e) {
         if (mounted) {
+          final msg = authState.errorMessage ?? e.toString().replaceAll('AuthException:', '').trim();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Authentication failed: ${e.toString().replaceAll('AuthException:', '').trim()}'),
+              content: Text(msg),
               backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );
         }
-      } finally {
-        if (mounted) setState(() => _isLoading = false);
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final authState = context.watch<AuthState>();
+
     return Scaffold(
+      appBar: AppBar(backgroundColor: Colors.transparent),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(EcoSpacing.l),
@@ -58,30 +75,29 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: EcoSpacing.xxl),
                 Icon(
-                  Icons.eco,
-                  size: 64,
-                  color: Theme.of(context).colorScheme.primary,
+                  Icons.local_shipping,
+                  size: 56,
+                  color: Colors.orange,
                 ),
-                const SizedBox(height: EcoSpacing.l),
+                const SizedBox(height: EcoSpacing.m),
                 Text(
-                  'Welcome Back',
-                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                  'Collector Portal',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: EcoSpacing.s),
+                const SizedBox(height: EcoSpacing.xs),
                 Text(
-                  'Sign in to continue your sustainable journey.',
+                  'Logistics portal for waste pickup drivers and collection teams.',
                   style: Theme.of(context).textTheme.bodyMedium,
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: EcoSpacing.xxl),
+                const SizedBox(height: EcoSpacing.xl),
                 EcoTextField(
-                  label: 'Email',
-                  hintText: 'Enter your email',
+                  label: 'Collector Email',
+                  hintText: 'Enter your collector email',
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
@@ -118,21 +134,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   alignment: WrapAlignment.spaceBetween,
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(
-                          height: 24,
-                          width: 24,
-                          child: Checkbox(
-                            value: _rememberMe,
-                            onChanged: (val) =>
-                                setState(() => _rememberMe = val ?? false),
-                          ),
-                        ),
-                        const SizedBox(width: EcoSpacing.s),
-                        const Text('Remember me'),
-                      ],
+                    TextButton.icon(
+                      onPressed: _fillDemoCredentials,
+                      icon: const Icon(Icons.flash_on, size: 16),
+                      label: const Text('Use Demo Account'),
                     ),
                     TextButton(
                       onPressed: () => context.push('/forgot-password'),
@@ -142,21 +147,23 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: EcoSpacing.l),
                 EcoButton(
-                  label: 'Sign In',
+                  label: 'Sign In as Collector',
                   onPressed: _onLogin,
-                  isLoading: _isLoading,
+                  isLoading: authState.isLoading,
                 ),
-                const SizedBox(height: EcoSpacing.l),
-                Wrap(
-                  alignment: WrapAlignment.center,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    const Text("Don't have an account?"),
-                    TextButton(
-                      onPressed: () => context.push('/signup'),
-                      child: const Text('Create Account'),
-                    ),
-                  ],
+                const SizedBox(height: EcoSpacing.xl),
+                Container(
+                  padding: const EdgeInsets.all(EcoSpacing.m),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withValues(alpha: 0.05),
+                    borderRadius: BorderRadius.circular(EcoRadius.medium),
+                    border: Border.all(color: Colors.orange.withValues(alpha: 0.2)),
+                  ),
+                  child: const Text(
+                    'Need an account? Collector accounts are provisioned by an administrator or facility operator.',
+                    style: TextStyle(fontSize: 11, color: Colors.grey),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ],
             ),
