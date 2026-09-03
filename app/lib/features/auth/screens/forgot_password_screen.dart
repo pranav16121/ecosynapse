@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../../../core/constants/dimens.dart';
+import '../../../core/state/auth_state.dart';
 import '../../../core/widgets/eco_button.dart';
 import '../../../core/widgets/eco_text_field.dart';
 import '../../../core/widgets/eco_feedback_state.dart';
@@ -18,15 +20,27 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   bool _isLoading = false;
 
   void _onSubmit() async {
-    if (_emailController.text.contains('@')) {
+    final email = _emailController.text.trim();
+    if (email.contains('@')) {
       setState(() => _isLoading = true);
-      // Mock delay
-      await Future.delayed(const Duration(seconds: 1));
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _isSubmitted = true;
-        });
+      try {
+        await context.read<AuthState>().resetPassword(email);
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+            _isSubmitted = true;
+          });
+        }
+      } catch (e) {
+        if (mounted) {
+          setState(() => _isLoading = false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(e.toString()),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
+        }
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -40,11 +54,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     if (_isSubmitted) {
       return Scaffold(
         body: EcoSuccessState(
-          title: 'Link Sent',
+          title: 'Reset Link Sent',
           message:
-              'We have sent a password reset link to ${_emailController.text}. Please check your inbox.',
-          buttonLabel: 'Back to Login',
-          onButtonPressed: () => context.go('/login'),
+              'We have sent a password reset email via Supabase Auth to ${_emailController.text}. Please check your inbox.',
+          buttonLabel: 'Back to Auth Portal',
+          onButtonPressed: () => context.go('/auth-portal'),
         ),
       );
     }
@@ -58,19 +72,19 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                'Forgot Password',
+                'Reset Password',
                 style: Theme.of(
                   context,
                 ).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: EcoSpacing.s),
               Text(
-                'Enter your email address and we\'ll send you a link to reset your password.',
+                'Enter your account email address and Supabase Auth will send you a reset link.',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: EcoSpacing.xl),
               EcoTextField(
-                label: 'Email',
+                label: 'Email Address',
                 hintText: 'Enter your email',
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,

@@ -54,7 +54,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   void _finishOnboarding() {
     context.read<AuthState>().completeOnboarding();
-    context.go('/login');
+    context.go('/auth-portal');
   }
 
   @override

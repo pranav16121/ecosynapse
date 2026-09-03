@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/constants/dimens.dart';
+import '../../../core/models/enums.dart';
+import '../../../core/state/auth_state.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -40,8 +43,28 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller.forward();
 
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
+    Future.delayed(const Duration(milliseconds: 1500), () {
+      if (!mounted) return;
+      final authState = context.read<AuthState>();
+      if (authState.isAuthenticated) {
+        final role = authState.currentUser?.role ?? UserRole.resident;
+        switch (role) {
+          case UserRole.resident:
+            context.go('/resident');
+            break;
+          case UserRole.admin:
+            context.go('/admin');
+            break;
+          case UserRole.collector:
+            context.go('/collector');
+            break;
+          case UserRole.recycler:
+            context.go('/recycler');
+            break;
+        }
+      } else if (authState.isOnboardingComplete) {
+        context.go('/auth-portal');
+      } else {
         context.go('/onboarding');
       }
     });

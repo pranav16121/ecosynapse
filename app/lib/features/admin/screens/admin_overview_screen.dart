@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../../core/constants/dimens.dart';
+import '../../../core/models/enums.dart';
+import '../../../core/services/supabase_service.dart';
 import '../../../core/state/auth_state.dart';
 import '../../../core/state/operational_state.dart';
 import '../../../core/mock/mock_data.dart';
@@ -22,7 +25,11 @@ class AdminOverviewScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () => context.read<AuthState>().logout(),
+            tooltip: 'Log Out',
+            onPressed: () {
+              context.read<AuthState>().logout();
+              context.go('/auth-portal');
+            },
           ),
         ],
       ),
@@ -36,6 +43,8 @@ class AdminOverviewScreen extends StatelessWidget {
               const SizedBox(height: EcoSpacing.l),
               _buildEcoScoreHero(context, ecoScore),
               const SizedBox(height: EcoSpacing.l),
+              Text('Live Bin Telemetry Summary', style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: EcoSpacing.m),
               _buildMetricGrid(context, opState),
               const SizedBox(height: EcoSpacing.l),
               _buildWasteTrendChart(context),
@@ -119,7 +128,7 @@ class AdminOverviewScreen extends StatelessWidget {
                 child: CircularProgressIndicator(
                   value: ecoScore.overallScore / 100,
                   strokeWidth: 8,
-                  backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+                  backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                   strokeCap: StrokeCap.round,
                 ),
               ),
@@ -135,39 +144,46 @@ class AdminOverviewScreen extends StatelessWidget {
   }
 
   Widget _buildMetricGrid(BuildContext context, OperationalState opState) {
+    final int totalBins = opState.bins.length;
+    final int onlineBins = opState.bins.where((b) => b.status != BinStatus.offline).length;
+    final int criticalBins = opState.bins.where((b) => b.maxFillLevel >= 80).length;
+    final int avgFill = opState.bins.isEmpty
+        ? 0
+        : (opState.bins.fold<int>(0, (sum, b) => sum + b.maxFillLevel) / opState.bins.length).round();
+
     return GridView.count(
       crossAxisCount: 2,
       crossAxisSpacing: EcoSpacing.m,
       mainAxisSpacing: EcoSpacing.m,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      childAspectRatio: 1.25, // Optimized for 360dp
+      childAspectRatio: 1.4,
       children: [
         _buildSmallMetric(
           context,
-          'Total Waste',
-          '${(opState.totalCommunityWasteKg / 1000).toStringAsFixed(1)} Tons',
+          'Total Smart Bins',
+          '$totalBins Bins',
           Icons.delete_outline,
           Colors.blue,
         ),
         _buildSmallMetric(
           context,
-          'Diverted',
-          '${opState.totalDivertedKg.toStringAsFixed(0)} kg',
-          Icons.recycling,
+          'Bins Online',
+          '$onlineBins / $totalBins',
+          Icons.wifi,
           Colors.green,
         ),
         _buildSmallMetric(
           context,
-          'Active Users',
-          '450',
-          Icons.people_outline,
-          Colors.orange,
+          'Critical Fill (>=80%)',
+          '$criticalBins Bins',
+          Icons.warning_amber_rounded,
+          criticalBins > 0 ? Colors.red : Colors.orange,
         ),
         _buildSmallMetric(
           context,
-          'Recycle Rate',
-          '${opState.communityRecycleRate.toStringAsFixed(0)}%',
+          'Avg Bin Fill',
+          '$avgFill%',
           Icons.auto_graph,
           Colors.teal,
         ),
@@ -188,21 +204,27 @@ class AdminOverviewScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, color: color, size: 22),
+          Row(
+            children: [
+              Icon(icon, color: color, size: 20),
+              const SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  label,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 10),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: EcoSpacing.s),
           FittedBox(
             fit: BoxFit.scaleDown,
             child: Text(
               value,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 10),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
@@ -245,7 +267,7 @@ class AdminOverviewScreen extends StatelessWidget {
                       show: true,
                       color: Theme.of(
                         context,
-                      ).colorScheme.primary.withOpacity(0.1),
+                      ).colorScheme.primary.withValues(alpha: 0.1),
                     ),
                   ),
                 ],
@@ -263,11 +285,11 @@ class AdminOverviewScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Urgent Alerts', style: Theme.of(context).textTheme.titleLarge),
+        Text('Urgent Bin Alerts', style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: EcoSpacing.m),
         if (fullBins.isEmpty)
           const EcoCard(
-            child: Center(child: Text('All bins are within normal levels.')),
+            child: Center(child: Text('All smart bins are within normal fill levels.')),
           )
         else
           ...fullBins.map(

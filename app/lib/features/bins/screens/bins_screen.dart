@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../../../core/constants/dimens.dart';
 import '../../../core/mock/mock_data.dart';
+import '../../../core/state/operational_state.dart';
 import '../../../core/widgets/eco_card.dart';
 
 class BinsScreen extends StatelessWidget {
@@ -9,6 +11,19 @@ class BinsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final opState = context.watch<OperationalState>();
+    final List<Map<String, dynamic>> displayedBins = opState.bins.isNotEmpty
+        ? opState.bins
+            .map((b) => {
+                  'id': b.id,
+                  'location': b.location,
+                  'fillLevel': b.maxFillLevel,
+                  'status': b.status.name,
+                  'categories': ['Wet', 'Dry', 'Recyclable'],
+                })
+            .toList()
+        : MockData.bins;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Smart Bins')),
       body: Column(
@@ -37,9 +52,9 @@ class BinsScreen extends StatelessWidget {
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.all(EcoSpacing.l),
-              itemCount: MockData.bins.length,
+              itemCount: displayedBins.length,
               itemBuilder: (context, index) =>
-                  _buildBinCard(context, MockData.bins[index]),
+                  _buildBinCard(context, displayedBins[index]),
             ),
           ),
         ],

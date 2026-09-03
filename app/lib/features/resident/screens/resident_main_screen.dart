@@ -20,41 +20,51 @@ class ResidentMainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final selectedIndex = context.watch<NavigationState>().residentIndex;
+    final navState = context.watch<NavigationState>();
+    final selectedIndex = navState.residentIndex;
 
-    return Scaffold(
-      body: IndexedStack(index: selectedIndex, children: _screens),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: selectedIndex,
-        onDestinationSelected: (index) =>
-            context.read<NavigationState>().setResidentIndex(index),
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.bar_chart_outlined),
-            selectedIcon: Icon(Icons.bar_chart),
-            label: 'Impact',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.stars_outlined),
-            selectedIcon: Icon(Icons.stars),
-            label: 'Rewards',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.people_outline),
-            selectedIcon: Icon(Icons.people),
-            label: 'Community',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
+    return PopScope(
+      canPop: selectedIndex == 0,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        if (selectedIndex != 0) {
+          context.read<NavigationState>().setResidentIndex(0);
+        }
+      },
+      child: Scaffold(
+        body: IndexedStack(index: selectedIndex, children: _screens),
+        bottomNavigationBar: NavigationBar(
+          selectedIndex: selectedIndex,
+          onDestinationSelected: (index) =>
+              context.read<NavigationState>().setResidentIndex(index),
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.home_outlined),
+              selectedIcon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.bar_chart_outlined),
+              selectedIcon: Icon(Icons.bar_chart),
+              label: 'Impact',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.stars_outlined),
+              selectedIcon: Icon(Icons.stars),
+              label: 'Rewards',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.people_outline),
+              selectedIcon: Icon(Icons.people),
+              label: 'Community',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.person_outline),
+              selectedIcon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ],
+        ),
       ),
     );
   }

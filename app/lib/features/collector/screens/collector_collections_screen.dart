@@ -4,6 +4,7 @@ import '../../../core/constants/dimens.dart';
 import '../../../core/models/enums.dart';
 import '../../../core/models/collection.dart';
 import '../../../core/models/smart_bin.dart';
+import '../../../core/state/auth_state.dart';
 import '../../../core/state/operational_state.dart';
 import '../../../core/widgets/eco_card.dart';
 import '../../../core/widgets/eco_button.dart';
@@ -386,12 +387,14 @@ class CollectorCollectionsScreen extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () async {
+                  final collectorId = context.read<AuthState>().currentUser?.id ?? 'collector';
                   Navigator.pop(context);
                   _showLoadingDialog(context);
-                  await Future.delayed(const Duration(milliseconds: 1500));
-                  opState.updateRequestStatus(
+                  await Future.delayed(const Duration(milliseconds: 1000));
+                  await opState.updateRequestStatus(
                     request.id,
                     CollectionStatus.completed,
+                    completedBy: collectorId,
                   );
                   if (context.mounted) {
                     Navigator.pop(context); // Close loading

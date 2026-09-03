@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/dimens.dart';
+import '../../../core/models/user.dart';
 import '../../../core/state/auth_state.dart';
 import '../../../core/state/resident_state.dart';
 import '../../../core/widgets/eco_card.dart';
@@ -26,12 +27,32 @@ class ProfileScreen extends StatelessWidget {
             const SizedBox(height: EcoSpacing.xl),
             _buildMenu(context),
             const SizedBox(height: EcoSpacing.xl),
-            TextButton(
-              onPressed: () {
-                context.read<AuthState>().logout();
-                context.go('/login');
-              },
-              child: const Text('Log Out', style: TextStyle(color: Colors.red)),
+            Wrap(
+              alignment: WrapAlignment.spaceEvenly,
+              spacing: EcoSpacing.m,
+              runSpacing: EcoSpacing.s,
+              children: [
+                OutlinedButton.icon(
+                  onPressed: () async {
+                    await context.read<AuthState>().logout();
+                    if (context.mounted) {
+                      context.go('/auth-portal');
+                    }
+                  },
+                  icon: const Icon(Icons.swap_horiz, size: 18),
+                  label: const Text('Switch Portal'),
+                ),
+                TextButton.icon(
+                  onPressed: () async {
+                    await context.read<AuthState>().logout();
+                    if (context.mounted) {
+                      context.go('/auth-portal');
+                    }
+                  },
+                  icon: const Icon(Icons.logout, size: 18, color: Colors.red),
+                  label: const Text('Log Out', style: TextStyle(color: Colors.red)),
+                ),
+              ],
             ),
             const SizedBox(height: EcoSpacing.xxl),
           ],
@@ -40,20 +61,50 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileHeader(BuildContext context, user, ResidentState state) {
+  Widget _buildProfileHeader(BuildContext context, User? user, ResidentState state) {
+    final String name = user?.fullName ?? 'Resident';
+    final String email = user?.email ?? '';
+    final String roleLabel = (user?.role.name ?? 'resident').toUpperCase();
+    final String residentId = user?.residentId != null && user!.residentId!.isNotEmpty
+        ? ' | ID: ${user.residentId}'
+        : '';
+
     return Column(
       children: [
-        const CircleAvatar(radius: 50, child: Icon(Icons.person, size: 50)),
+        CircleAvatar(
+          radius: 40,
+          backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+          child: Icon(Icons.person, size: 40, color: Theme.of(context).colorScheme.primary),
+        ),
         const SizedBox(height: EcoSpacing.m),
         Text(
-          'Pranav Powell',
+          name,
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
             fontWeight: FontWeight.bold,
           ),
+          textAlign: TextAlign.center,
         ),
-        const Text(
-          'Greenwood Residency | ID: RES-2026-042',
-          style: TextStyle(color: Colors.grey),
+        const SizedBox(height: 2),
+        Text(
+          '$email $residentId',
+          style: const TextStyle(color: Colors.grey, fontSize: 12),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: EcoSpacing.s),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(EcoRadius.small),
+          ),
+          child: Text(
+            'ROLE: $roleLabel',
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.primary,
+              fontWeight: FontWeight.bold,
+              fontSize: 10,
+            ),
+          ),
         ),
         const SizedBox(height: EcoSpacing.l),
         Wrap(
@@ -63,7 +114,7 @@ class ProfileScreen extends StatelessWidget {
           children: [
             _buildStatItem(context, 'EcoScore', '${state.ecoScore}'),
             _buildStatItem(context, 'EcoPoints', '${state.ecoPoints}'),
-            _buildStatItem(context, 'Rank', '#12'),
+            _buildStatItem(context, 'Community Rank', '#12'),
           ],
         ),
       ],
@@ -169,7 +220,7 @@ class ProfileScreen extends StatelessWidget {
 
   void _showComingSoon(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Feature coming soon in Stage 2!')),
+      const SnackBar(content: Text('Feature coming soon!')),
     );
   }
 }

@@ -69,6 +69,28 @@ class User {
     );
   }
 
+  /// Converts a Supabase database row from `public.users` into a [User] model
+  factory User.fromSupabase(Map<String, dynamic> json, {String? authEmail}) {
+    final rawRole = (json['user_type'] ?? json['role'] ?? 'resident').toString().toLowerCase();
+    final role = UserRole.values.firstWhere(
+      (e) => e.name.toLowerCase() == rawRole,
+      orElse: () => UserRole.resident,
+    );
+
+    return User(
+      id: json['id']?.toString() ?? '',
+      fullName: json['name']?.toString() ?? json['fullName']?.toString() ?? 'User',
+      email: json['email']?.toString() ?? authEmail ?? '',
+      role: role,
+      communityId: json['community_id']?.toString() ?? json['communityId']?.toString() ?? '1',
+      residentId: json['flat_no']?.toString() ?? json['residentId']?.toString(),
+      joinedDate: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'].toString())
+          : null,
+      badges: (json['badges'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,

@@ -41,12 +41,28 @@ class RewardsScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: EcoSpacing.l),
             sliver: SliverList(
               delegate: SliverChildBuilderDelegate(
-                (context, index) => _buildRewardCard(
-                  context,
-                  MockData.rewards[index],
-                  resState,
-                ),
-                childCount: MockData.rewards.length,
+                (context, index) {
+                  final rewardList = resState.liveRewards.isNotEmpty
+                      ? resState.liveRewards
+                          .map((r) => {
+                                'id': r.id,
+                                'title': r.title,
+                                'points': r.pointsCost,
+                                'description': r.description,
+                                'icon': r.icon,
+                                'category': r.category,
+                              })
+                          .toList()
+                      : MockData.rewards;
+                  return _buildRewardCard(
+                    context,
+                    rewardList[index],
+                    resState,
+                  );
+                },
+                childCount: resState.liveRewards.isNotEmpty
+                    ? resState.liveRewards.length
+                    : MockData.rewards.length,
               ),
             ),
           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/dimens.dart';
 import '../../../core/models/enums.dart';
@@ -30,12 +31,14 @@ class AdminBinsScreen extends StatelessWidget {
     SmartBin bin,
     OperationalState opState,
   ) {
-    final bool isUrgent = bin.maxFillLevel >= 80;
+    final bool isRequested = opState.hasActiveCollectionRequest(bin.id);
+    final bool isOffline = bin.status == BinStatus.offline;
     final Color statusColor = _getStatusColor(bin.status);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: EcoSpacing.m),
       child: EcoCard(
+        onTap: () => context.push('/bin-detail', extra: bin),
         child: Column(
           children: [
             Row(
@@ -64,7 +67,7 @@ class AdminBinsScreen extends StatelessWidget {
                           vertical: 2,
                         ),
                         decoration: BoxDecoration(
-                          color: statusColor.withOpacity(0.1),
+                          color: statusColor.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(EcoRadius.small),
                         ),
                         child: Text(
@@ -79,14 +82,34 @@ class AdminBinsScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                if (isUrgent)
+                if (bin.maxFillLevel >= 80)
                   const Icon(Icons.error_outline, color: Colors.red),
               ],
             ),
             const Divider(height: EcoSpacing.xl),
             _buildCompartmentLevels(context, bin),
             const SizedBox(height: EcoSpacing.l),
-            if (isUrgent)
+            if (isRequested)
+              EcoButton(
+                label: 'Collection Requested',
+                onPressed: () {},
+                type: EcoButtonType.secondary,
+              )
+            else if (isOffline)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(EcoSpacing.m),
+                decoration: BoxDecoration(
+                  color: Colors.grey.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(EcoRadius.medium),
+                ),
+                child: const Text(
+                  'Bin Offline — Collection Request Unavailable',
+                  style: TextStyle(fontSize: 11, color: Colors.grey),
+                  textAlign: TextAlign.center,
+                ),
+              )
+            else
               EcoButton(
                 label: 'Request Immediate Collection',
                 onPressed: () {
@@ -123,7 +146,7 @@ class AdminBinsScreen extends StatelessWidget {
             value: level / 100,
             strokeWidth: 5,
             color: color,
-            backgroundColor: color.withOpacity(0.1),
+            backgroundColor: color.withValues(alpha: 0.1),
             strokeCap: StrokeCap.round,
           ),
         ),
@@ -169,7 +192,7 @@ class AdminBinsScreen extends StatelessWidget {
     int value,
     Color color,
   ) {
-    return Container(
+    return SizedBox(
       width: 80,
       child: Column(
         children: [
